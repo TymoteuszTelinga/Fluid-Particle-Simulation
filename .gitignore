@@ -24,9 +24,17 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe
 *.out
 *.app
+
+# Visual Studio files and folder
+.vs/
+**.vcxproj.user
+**.csproj
+
+# Binaries
+**/bin/
+bin-int/
