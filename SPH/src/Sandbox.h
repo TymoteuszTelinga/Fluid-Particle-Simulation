@@ -28,6 +28,8 @@ private:
 	Scope<Camera> m_Camera;
 
 	std::array<glm::vec2, 4000> m_Positions;
+	glm::vec3 m_Tint;
+
 
 	float m_Offset = 0.0f;
 	float m_FrameTime = 0.0f;

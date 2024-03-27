@@ -21,6 +21,7 @@ struct QuadVertex
 {
 	glm::vec2 Position;
 	glm::vec2 UV;
+	glm::vec3 Color;
 };
 
 struct RendererData
@@ -68,6 +69,7 @@ void Renderer::Init()
 	VertexBufferLayout Layout;
 	Layout.Pushf(2); //Position
 	Layout.Pushf(2); //Texture
+	Layout.Pushf(3); //Tint Color
 	s_Data.QuadVertexArray->AddBuffer(*s_Data.QuadVertexBuffer, Layout);
 
 	s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
@@ -128,6 +130,11 @@ void Renderer::BeginScene(const Camera& camera)
 
 void Renderer::DrawQuad(const glm::vec2& position)
 {
+	DrawQuad(position, glm::vec3(1.0f));
+}
+
+void Renderer::DrawQuad(const glm::vec2& position, const glm::vec3& color)
+{
 	glm::mat4 transform = glm::translate(glm::mat4(1), { position.x, position.y, 1.0 });
 
 	constexpr size_t quadVertexCount = 4;
@@ -140,6 +147,7 @@ void Renderer::DrawQuad(const glm::vec2& position)
 	{
 		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 		s_Data.QuadVertexBufferPtr->UV = textureCoords[i];
+		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr++;
 	}
 
@@ -184,7 +192,6 @@ void Renderer::Flush()
 	s_Data.QuadShader->Bind();
 	s_Data.QuadShader->SetUniform1i("ColorMap", 1);
 	s_Data.QuadShader->SetUniformMat4f("MVPMatrix", s_ViewProjectionMatrix);
-
 	s_Data.QuadTexture->Bind(1);
 	s_Data.QuadVertexArray->Bind();
 	s_Data.QuadIndexBuffer->Bind();

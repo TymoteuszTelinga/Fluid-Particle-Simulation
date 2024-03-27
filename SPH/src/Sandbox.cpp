@@ -5,7 +5,7 @@
 #include "Core/Input.h"
 
 Sandbox::Sandbox(const ApplicationSpecification& spec)
-	:Application(spec)
+	:Application(spec), m_Tint(1.0f)
 {
 	m_Camera = CreateScope<Camera>(0, spec.Width, 0, spec.Height);
 
@@ -42,7 +42,7 @@ void Sandbox::OnRender()
 
 	for (size_t i = 0; i < m_Positions.size(); i++)
 	{
-		Renderer::DrawQuad(m_Positions[i]);
+		Renderer::DrawQuad(m_Positions[i],m_Tint);
 	}
 
 	Renderer::EndScene();
@@ -53,6 +53,8 @@ void Sandbox::OnRender()
 	ImGui::Separator();
 	ImGui::Text("FPS %d", m_FPS);
 	ImGui::Text("Frame Time %f ms", m_FrameTime);
+	ImGui::Separator();
+	ImGui::ColorEdit3("Particle", &m_Tint.r);
 	ImGui::End();
 
 	Renderer::ResetStats();
@@ -61,9 +63,13 @@ void Sandbox::OnRender()
 
 bool Sandbox::Resize(WindowResizeEvent& e)
 {
-	//glViewport(0, 0, e.GetWidth(), e.GetHeight());
 	m_Camera->SetProjection(0, e.GetWidth(), 0, e.GetHeight());
 	m_Width = e.GetWidth();
 	m_Height = e.GetHeight();
+
+	for (size_t i = 0; i < m_Positions.size(); i++)
+	{
+		m_Positions[i] = glm::vec2(rand() % m_Width, rand() % m_Height);
+	}
 	return true;
 }

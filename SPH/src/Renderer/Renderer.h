@@ -18,6 +18,7 @@ public:
 
 	static void BeginScene(const Camera& camera);
 	static void DrawQuad(const glm::vec2& position);
+	static void DrawQuad(const glm::vec2& position, const glm::vec3& color);
 	static void EndScene();
 
 	struct Statistics

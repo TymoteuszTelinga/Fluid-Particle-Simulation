@@ -154,9 +154,4 @@
     <None Include="src\Shaders\fragment.glsl" />
     <None Include="src\Shaders\vertex.glsl" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="dot.png">
-      <Filter>Pliki zasobów</Filter>
-    </Image>
-  </ItemGroup>
 </Project>
