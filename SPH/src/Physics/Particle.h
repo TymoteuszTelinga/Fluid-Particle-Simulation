@@ -11,43 +11,18 @@ public:
 	Particle(float xPos, float  yPos)
 		: position(xPos, yPos), velocity(0, 0), force(0, 0) {};
 
-	void Update(float deltaTime) {
-		ApplyForce(deltaTime);
-		UpdatePosition(deltaTime);
-	}
+	void Update(float deltaTime);
+	void AddForce(const glm::vec2& force);
 
-	void AddForce(const glm::vec2& force) {
-		this->force += force;
-	}
+	glm::vec2 GetPosition()const;
+	glm::vec2 GetVelocity()const;
 
-
-	glm::vec2 GetPosition()const
-	{
-		return this->position;
-	};
-
-	glm::vec2 GetVelocity()const
-	{
-		return this->velocity;
-	}
-
-	void SetPosition(const glm::vec2& position) {
-		this->position = position;
-	}
-
-	void SetVelocity(const glm::vec2& velocity) {
-		this->velocity = velocity;
-	}
+	void SetPosition(const glm::vec2& position);
+	void SetVelocity(const glm::vec2& velocity);
 
 private:
-	void ApplyForce(float deltaTime) {
-		this->velocity += this->force * deltaTime;
-		this->force = glm::vec2(0, 0);
-	}
-
-	void UpdatePosition(float deltaTime) {
-		this->position += this->velocity * deltaTime;
-	}
+	void ApplyForce(float deltaTime);
+	void UpdatePosition(float deltaTime);
 
 
 private:

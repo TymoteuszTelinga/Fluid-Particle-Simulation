@@ -11,12 +11,7 @@ class Gravity
 {
 
 public:
-	void Apply(std::vector<Particle>& particles, float deltaTime) const{
-		glm::vec2 gravityForce(0,-Gravity::FORCE);
-		for (Particle& particle : particles) {
-			particle.AddForce(gravityForce);
-		}
-	}
+	void Apply(std::vector<Particle>& particles, float deltaTime) const;
 
 private:
 	static constexpr float FORCE = 200.0f;
