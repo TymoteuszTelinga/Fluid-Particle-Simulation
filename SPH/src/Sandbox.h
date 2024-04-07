@@ -4,12 +4,16 @@
 #include <glm/glm.hpp>
 
 #include <array>
+#include <vector>
 
 #include "Renderer/Camera.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/IndexBuffer.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Texture.h"
+
+#include "Physics/Physics.h"
+#include "Physics/Particle.h"
 
 class Sandbox : public Application
 {
@@ -25,11 +29,11 @@ private:
 	bool Resize(WindowResizeEvent& e);
 
 private:
+	Scope<Physics> l_Physics;
 	Scope<Camera> m_Camera;
 
-	std::array<glm::vec2, 4000> m_Positions;
+	std::vector<Particle> m_Particles;
 	glm::vec3 m_Tint;
-
 
 	float m_Offset = 0.0f;
 	float m_FrameTime = 0.0f;

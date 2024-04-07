@@ -9,9 +9,14 @@ Sandbox::Sandbox(const ApplicationSpecification& spec)
 {
 	m_Camera = CreateScope<Camera>(0, spec.Width, 0, spec.Height);
 
-	for (size_t i = 0; i < m_Positions.size(); i++)
-	{
-		m_Positions[i] = glm::vec2(rand() % spec.Width, rand() % spec.Height);
+	PhysicsSpecification pSpec;
+	pSpec.Height = spec.Height;
+	pSpec.Width = spec.Width;
+	l_Physics = CreateScope<Physics>(pSpec);
+
+	m_Particles.reserve(4000);
+	for (size_t i = 0; i < m_Particles.capacity(); i++) {
+		m_Particles.emplace_back(rand() % spec.Width, rand() % spec.Height);
 	}
 }
 
@@ -34,15 +39,16 @@ void Sandbox::OnUpdate(float DeltaTime)
 		m_CountTime = 0.0f;
 		m_Count = 0;
 	}
+
+	l_Physics->Apply(m_Particles, DeltaTime);
 }
 
 void Sandbox::OnRender()
 {
 	Renderer::BeginScene(*m_Camera);
-
-	for (size_t i = 0; i < m_Positions.size(); i++)
-	{
-		Renderer::DrawQuad(m_Positions[i],m_Tint);
+	
+	for (Particle& particle : m_Particles) {
+		Renderer::DrawQuad(particle.GetPosition(), m_Tint);
 	}
 
 	Renderer::EndScene();
@@ -67,9 +73,9 @@ bool Sandbox::Resize(WindowResizeEvent& e)
 	m_Width = e.GetWidth();
 	m_Height = e.GetHeight();
 
-	for (size_t i = 0; i < m_Positions.size(); i++)
-	{
-		m_Positions[i] = glm::vec2(rand() % m_Width, rand() % m_Height);
+	for (Particle& particle : m_Particles) {
+		particle.SetPosition(glm::vec2(rand() % m_Width, rand() % m_Height));
 	}
+
 	return true;
 }
