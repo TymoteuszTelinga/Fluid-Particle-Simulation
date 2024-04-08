@@ -181,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Physics\Forces\Pressure.h" />
+    <ClInclude Include="src\Physics\PhysicsSpecification.h" />
     <ClInclude Include="src\Physics\Properties\Density.h" />
     <ClInclude Include="src\Physics\Kernel.h" />
     <ClInclude Include="src\Physics\Particle.h" />

@@ -185,6 +185,9 @@
     <ClInclude Include="src\Physics\Forces\Pressure.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="src\Physics\PhysicsSpecification.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\fragment.glsl" />

@@ -1,20 +1,17 @@
 #pragma once
 #include <vector>
 
-#include <glm/glm.hpp>
-
+#include "Physics/PhysicsSpecification.h"
 #include "Physics/Particle.h"
-#include "Physics/Kernel.h"
 
 class Density
 {
 
 public:
+	Density(const PhysicsSpecification& spec) : p_spec(spec) {}
 	void Calculate(std::vector<Particle>& particles);
-	static constexpr float REST_DENSITY = 0.0f;
 
 private:
-	static constexpr float KERNEL_RADIUS = 20.0f; // 20cm
-	static constexpr KernelFunc KERNEL = Kernel::Poly6;
+	const PhysicsSpecification& p_spec;
 };
 

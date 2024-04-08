@@ -1,9 +1,5 @@
 #include "Pressure.h"
 
-#include <glm/glm.hpp>
-#include <stdio.h>
-
-#include "Physics/Properties/Density.h"
 
 void Pressure::Apply(std::vector<Particle>& particles, float deltaTime) {
 	CalculatePressures(particles);
@@ -14,15 +10,16 @@ void Pressure::Apply(std::vector<Particle>& particles, float deltaTime) {
 			Particle& other = particles[j];
 
 			float distance = center.calculateDistance(other);
-			float slope = Pressure::KERNEL_DERIV(distance, Pressure::KERNEL_RADIUS);
+			float slope = p_spec.PressureKernelDeriv(distance, p_spec.KernelRange);
 			if (slope == 0) {
 				continue;
 			}
 
 			glm::vec2 direction = (other.GetPosition() - center.GetPosition()) / distance;
-			glm::vec2 pressureCoef = -direction * Particle::MASS * slope;
-			center.AddForce(pressureCoef * other.GetPressure() / other.GetDensity());
-			other.AddForce(-pressureCoef * center.GetPressure() / center.GetDensity());
+			glm::vec2 pressureCoef = -direction * p_spec.ParticleMass * slope * (center.GetPressure() + other.GetPressure());
+			float density = other.GetDensity() * center.GetDensity();
+			center.AddForce(pressureCoef / density);
+			other.AddForce(-pressureCoef / density);
 		}
 	}
 }
@@ -34,5 +31,5 @@ void Pressure::CalculatePressures(std::vector<Particle>& particles) {
 }
 
 float Pressure::CalculatePressure(const Particle& particle) {
-	return Pressure::GAS_CONSTANT * (particle.GetDensity() - Density::REST_DENSITY);
+	return p_spec.GasConstant * (particle.GetDensity() - p_spec.RestDensity);
 }

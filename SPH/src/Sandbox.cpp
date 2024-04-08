@@ -4,17 +4,14 @@
 #include "Renderer/Renderer.h"
 #include "Core/Input.h"
 
-Sandbox::Sandbox(const ApplicationSpecification& spec)
+Sandbox::Sandbox(const ApplicationSpecification& spec, const PhysicsSpecification& p_spec)
 	:Application(spec), m_Tint(1.0f)
 {
 	m_Camera = CreateScope<Camera>(0, spec.Width, 0, spec.Height);
 
-	PhysicsSpecification pSpec;
-	pSpec.Height = spec.Height;
-	pSpec.Width = spec.Width;
-	l_Physics = CreateScope<Physics>(pSpec);
+	l_Physics = CreateScope<Physics>(p_spec);
 
-	m_Particles.reserve(1000);
+	m_Particles.reserve(500);
 	for (size_t i = 0; i < m_Particles.capacity(); i++) {
 		m_Particles.emplace_back(rand() % spec.Width, rand() % spec.Height/2);
 	}
@@ -39,7 +36,6 @@ void Sandbox::OnUpdate(float DeltaTime)
 		m_CountTime = 0.0f;
 		m_Count = 0;
 	}
-
 	l_Physics->Apply(m_Particles, DeltaTime);
 }
 

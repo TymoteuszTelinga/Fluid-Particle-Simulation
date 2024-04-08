@@ -1,18 +1,13 @@
 #pragma once
 #include <glm/glm.hpp>
 
-
-
 class Particle
 {
 public:
-	static constexpr float RADIUS = 2.5f; //2.5cm
-	static constexpr float MASS = 1.0f;
-
 	Particle(float xPos, float yPos)
-		: position(xPos, yPos), velocity(0.0f, 0.0f), force(0.0f, 0.0f), density(0.0f) {};
+		: position(xPos, yPos), velocity(0.0f, 0.0f), force(0.0f, 0.0f), density(0.0f), pressure(0.0f) {};
 
-	void Update(float deltaTime);
+	void Update(float deltaTime, float environmentScale);
 	void AddForce(const glm::vec2& force);
 	void AddPartialDensity(const float density);
 	void SetPressure(const float pressure);
@@ -30,7 +25,7 @@ public:
 private:
 	void ResetTemporaryProperties();
 	void ApplyForce(float deltaTime);
-	void UpdatePosition(float deltaTime);
+	void UpdatePosition(float deltaTime, float environmentScale);
 
 private:
 	glm::vec2 position;
