@@ -150,8 +150,11 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Physics\Forces\Pressure.cpp" />
+    <ClCompile Include="src\Physics\Properties\Density.cpp" />
+    <ClCompile Include="src\Physics\Kernel.cpp" />
     <ClCompile Include="src\Physics\Particle.cpp" />
-    <ClCompile Include="src\Physics\Gravity.cpp" />
+    <ClCompile Include="src\Physics\Forces\Gravity.cpp" />
     <ClCompile Include="src\Physics\Physics.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
@@ -177,8 +180,11 @@
     <ClCompile Include="vendor\stbImage\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Physics\Forces\Pressure.h" />
+    <ClInclude Include="src\Physics\Properties\Density.h" />
+    <ClInclude Include="src\Physics\Kernel.h" />
     <ClInclude Include="src\Physics\Particle.h" />
-    <ClInclude Include="src\Physics\Gravity.h" />
+    <ClInclude Include="src\Physics\Forces\Gravity.h" />
     <ClInclude Include="src\Physics\Physics.h" />
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Base.h" />

@@ -14,9 +14,9 @@ Sandbox::Sandbox(const ApplicationSpecification& spec)
 	pSpec.Width = spec.Width;
 	l_Physics = CreateScope<Physics>(pSpec);
 
-	m_Particles.reserve(4000);
+	m_Particles.reserve(1000);
 	for (size_t i = 0; i < m_Particles.capacity(); i++) {
-		m_Particles.emplace_back(rand() % spec.Width, rand() % spec.Height);
+		m_Particles.emplace_back(rand() % spec.Width, rand() % spec.Height/2);
 	}
 }
 

@@ -14,6 +14,6 @@ public:
 	void Apply(std::vector<Particle>& particles, float deltaTime) const;
 
 private:
-	static constexpr float FORCE = 200.0f;
+	static constexpr float FORCE = 10.0f; // m/s^2
 };
 
