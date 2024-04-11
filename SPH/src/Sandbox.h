@@ -19,7 +19,7 @@
 class Sandbox : public Application
 {
 public:
-	Sandbox(const ApplicationSpecification& spec, const PhysicsSpecification& p_spec);
+	Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec);
 	~Sandbox() {};
 
 	virtual void OnEvent(Event& e) override;

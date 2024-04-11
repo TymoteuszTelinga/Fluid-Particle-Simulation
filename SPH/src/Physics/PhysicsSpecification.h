@@ -11,12 +11,13 @@ struct PhysicsSpecification {
 
 	float ParticleRadius = 2.5f;
 	float ParticleMass = 1.0f;
+	float CollisionDamping = 0.2f;
 
-	float GravityForce = 9.81f;
-	float GasConstant = 8.31f;
-	float RestDensity = 0.0001f;
+	float GravityAcceleration = 9.81f;
+	float GasConstant = 126.0f;
+	float RestDensity = 0.01f;
 
 	KernelFunc DensityKernel = Kernel::Poly6;
 	KernelFunc PressureKernelDeriv = Kernel::Spiky3Deriv;
-	float KernelRange = 10.0f;
+	float KernelRange = 30.0f;
 };

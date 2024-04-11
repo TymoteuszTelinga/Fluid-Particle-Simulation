@@ -11,25 +11,32 @@
 #include "Physics/Properties/Density.h"
 #include "Physics/Forces/Gravity.h"
 #include "Physics/Forces/Pressure.h"
+#include "Physics/Forces/CollisionHandler.h"
 
 class Physics
 {
 public:
-	Physics(const PhysicsSpecification& spec): p_spec(spec) {
+	Physics(PhysicsSpecification& spec): p_spec(spec) {
 		l_Gravity = CreateScope<Gravity>(spec);
 		l_Density = CreateScope<Density>(spec);
 		l_Pressure = CreateScope<Pressure>(spec);
+		l_CollisionHandler = CreateScope<CollisionHandler>(spec);
 	}
 
 	void Apply(std::vector<Particle>& particles, const float deltaTime) const;
 
-private:
-	void BounceFromBorder(Particle& particle) const;
+	PhysicsSpecification& getSpecification() {
+		return p_spec;
+	}
 
 private:
-	const PhysicsSpecification& p_spec;
+	void Update(std::vector<Particle>& particles, const float deltaTime) const;
+
+private:
+	PhysicsSpecification& p_spec;
 	Scope<Gravity> l_Gravity;
 	Scope<Pressure> l_Pressure;
 	Scope<Density> l_Density;
+	Scope<CollisionHandler> l_CollisionHandler;
 };
 

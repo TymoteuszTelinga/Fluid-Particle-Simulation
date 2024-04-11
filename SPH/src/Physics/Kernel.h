@@ -1,7 +1,7 @@
 #pragma once
 
 #include <math.h>
-#define PI 3.141592
+#define PI 3.141592f
 
 typedef float (*KernelFunc)(float, float);
 
@@ -17,11 +17,11 @@ public:
 	static float ViscosityDeriv(float distance, float radius);
 
 private:
-	static constexpr float Poly6Factor = 315/(64*PI);
-	static constexpr float SpikyFactor = 15/PI;
+	static constexpr float Poly6Factor = 35/(32*PI);
+	static constexpr float SpikyFactor = 2/PI;
 	static constexpr float ViscosityFactor = 15 / (2*PI);
-	static constexpr float Poly6DerivFactor = 945 / (32 * PI);
-	static constexpr float SpikyDerivFactor = 45 / PI;
+	static constexpr float Poly6DerivFactor = 105 / (32 * PI);
+	static constexpr float SpikyDerivFactor = 12 / PI;
 	static constexpr float ViscosityDerivFactor = 15 / (4 * PI);
 };
 

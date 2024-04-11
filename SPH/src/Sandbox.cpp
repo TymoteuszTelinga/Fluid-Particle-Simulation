@@ -4,16 +4,16 @@
 #include "Renderer/Renderer.h"
 #include "Core/Input.h"
 
-Sandbox::Sandbox(const ApplicationSpecification& spec, const PhysicsSpecification& p_spec)
+Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec)
 	:Application(spec), m_Tint(1.0f)
 {
 	m_Camera = CreateScope<Camera>(0, spec.Width, 0, spec.Height);
 
 	l_Physics = CreateScope<Physics>(p_spec);
 
-	m_Particles.reserve(500);
+	m_Particles.reserve(400);
 	for (size_t i = 0; i < m_Particles.capacity(); i++) {
-		m_Particles.emplace_back(rand() % spec.Width, rand() % spec.Height/2);
+		m_Particles.emplace_back(rand() % spec.Width, rand() % spec.Height);
 	}
 }
 
@@ -36,7 +36,8 @@ void Sandbox::OnUpdate(float DeltaTime)
 		m_CountTime = 0.0f;
 		m_Count = 0;
 	}
-	l_Physics->Apply(m_Particles, DeltaTime);
+	//printf("%f\n", DeltaTime);
+	l_Physics->Apply(m_Particles, 0.01);
 }
 
 void Sandbox::OnRender()
@@ -50,13 +51,34 @@ void Sandbox::OnRender()
 	Renderer::EndScene();
 
 	ImGui::Begin("Test");
-	ImGui::Text("Draw calls %d", Renderer::GetStats().DrawCalls);
-	ImGui::Text("Quads Count %d", Renderer::GetStats().QuadCount);
-	ImGui::Separator();
-	ImGui::Text("FPS %d", m_FPS);
-	ImGui::Text("Frame Time %f ms", m_FrameTime);
-	ImGui::Separator();
-	ImGui::ColorEdit3("Particle", &m_Tint.r);
+	if (ImGui::CollapsingHeader("Stats")) {
+		ImGui::Text("Draw calls %d", Renderer::GetStats().DrawCalls);
+		ImGui::Text("Quads Count %d", Renderer::GetStats().QuadCount);
+		ImGui::Separator();
+		ImGui::Text("FPS %d", m_FPS);
+		ImGui::Text("Frame Time %f ms", m_FrameTime);
+	}
+	if (ImGui::CollapsingHeader("Render")) {
+		ImGui::ColorEdit3("Particle", &m_Tint.r);
+		
+	}
+	ImGui::SetNextItemOpen(true);
+	if (ImGui::CollapsingHeader("Physics")) {
+		PhysicsSpecification& spec = this->l_Physics->getSpecification();
+
+		ImGui::SeparatorText("Particle");
+		ImGui::DragFloat("Particle radius", &spec.ParticleRadius, 0.1f, 0.05f, 1e5);
+		ImGui::DragFloat("Particle mass", &spec.ParticleMass, 0.05f, 0.05f, 1e5);
+
+		ImGui::SeparatorText("Forces");
+		ImGui::DragFloat("Collision Damping", &spec.CollisionDamping, 0.05f, 0.0f, 1.0f);
+		ImGui::DragFloat("Gravity force", &spec.GravityAcceleration, 0.005f, -1e5, 1e5);
+		ImGui::DragFloat("Gas constant", &spec.GasConstant, 1.0f, 0.0f, 1e8);
+		ImGui::DragFloat("Rest density", &spec.RestDensity, 0.00001f, 0.0f, 1e5, "%.5f");
+
+		ImGui::SeparatorText("Smoothing Kernels");
+		ImGui::DragFloat("Kernel range", &spec.KernelRange, 0.005f, 0.05f, 1e5);
+	}
 	ImGui::End();
 
 	Renderer::ResetStats();
@@ -69,9 +91,9 @@ bool Sandbox::Resize(WindowResizeEvent& e)
 	m_Width = e.GetWidth();
 	m_Height = e.GetHeight();
 
-	for (Particle& particle : m_Particles) {
-		particle.SetPosition(glm::vec2(rand() % m_Width, rand() % m_Height));
-	}
+	//for (Particle& particle : m_Particles) {
+	//	particle.SetPosition(glm::vec2(rand() % m_Width, rand() % m_Height));
+	//	}
 
 	return true;
 }

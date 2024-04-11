@@ -16,10 +16,9 @@ void Pressure::Apply(std::vector<Particle>& particles, float deltaTime) {
 			}
 
 			glm::vec2 direction = (other.GetPosition() - center.GetPosition()) / distance;
-			glm::vec2 pressureCoef = -direction * p_spec.ParticleMass * slope * (center.GetPressure() + other.GetPressure());
-			float density = other.GetDensity() * center.GetDensity();
-			center.AddForce(pressureCoef / density);
-			other.AddForce(-pressureCoef / density);
+			glm::vec2 pressureCoef = -direction * p_spec.ParticleMass * slope * (center.GetPressure() + other.GetPressure()) * 0.5f;
+			center.AddForce(pressureCoef / other.GetDensity());
+			other.AddForce(-pressureCoef / center.GetDensity());
 		}
 	}
 }

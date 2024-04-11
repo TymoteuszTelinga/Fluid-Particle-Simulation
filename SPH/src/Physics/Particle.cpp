@@ -46,7 +46,7 @@ void Particle::SetPressure(const float pressure) {
 }
 
 void Particle::ApplyForce(float deltaTime) {
-	this->velocity += this->force * deltaTime;
+	this->velocity += this->force * deltaTime / this->density;
 }
 
 void Particle::ResetTemporaryProperties() {

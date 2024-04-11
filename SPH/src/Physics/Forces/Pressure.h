@@ -7,13 +7,13 @@
 class Pressure
 {
 public:
-	Pressure(const PhysicsSpecification& spec) : p_spec(spec) {}
+	Pressure(PhysicsSpecification& spec) : p_spec(spec) {}
 	void Apply(std::vector<Particle>& particles, float deltaTime);
 
 private:
 	void CalculatePressures(std::vector<Particle>& particles);
 	float CalculatePressure(const Particle& particle);
 
-	const PhysicsSpecification& p_spec;
+	PhysicsSpecification& p_spec;
 };
 

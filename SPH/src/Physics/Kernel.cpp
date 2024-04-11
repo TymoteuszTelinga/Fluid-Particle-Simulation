@@ -3,7 +3,7 @@
 float Kernel::Poly6(float distance, float radius) {
 	if (distance <= radius) {
 		float diff =  radius * radius - distance * distance;
-		return pow(diff,3) * Kernel::Poly6Factor / pow(radius, 9);
+		return pow(diff,3) * Kernel::Poly6Factor / pow(radius, 7);
 	}
 	return 0;
 }
@@ -11,7 +11,7 @@ float Kernel::Poly6(float distance, float radius) {
 float Kernel::Spiky3(float distance, float radius) {
 	if (distance <= radius) {
 		float diff = radius - distance;
-		return pow(diff, 3) * Kernel::SpikyFactor / pow(radius, 6);
+		return pow(diff, 3) * Kernel::SpikyFactor / pow(radius, 4);
 	}
 	return 0;
 }
@@ -30,7 +30,7 @@ float Kernel::Viscosity(float distance, float radius) {
 float Kernel::Poly6Deriv(float distance, float radius) {
 	if (distance <= radius) {
 		float diff =  radius * radius - distance * distance;
-		return distance * diff * diff * Kernel::Poly6DerivFactor / pow(radius, 9);
+		return distance * diff * diff * Kernel::Poly6DerivFactor / pow(radius, 7);
 	}
 	return 0;
 }
@@ -38,7 +38,7 @@ float Kernel::Poly6Deriv(float distance, float radius) {
 float Kernel::Spiky3Deriv(float distance, float radius) {
 	if (distance <= radius) {
 		float diff = radius - distance;
-		return pow(diff, 2) * Kernel::SpikyDerivFactor / pow(radius, 6);
+		return pow(diff, 2) * Kernel::SpikyDerivFactor / pow(radius, 4);
 	}
 	return 0;
 }

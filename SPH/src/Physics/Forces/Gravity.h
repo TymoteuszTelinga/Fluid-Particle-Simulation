@@ -7,10 +7,10 @@
 class Gravity
 {
 public:
-	Gravity(const PhysicsSpecification& spec) : p_spec(spec) {};
+	Gravity(PhysicsSpecification& spec) : p_spec(spec) {};
 	void Apply(std::vector<Particle>& particles, float deltaTime) const;
 
 private:
-	const PhysicsSpecification& p_spec;
+	PhysicsSpecification& p_spec;
 };
 

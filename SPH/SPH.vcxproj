@@ -150,6 +150,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Physics\Forces\CollisionHandler.cpp" />
     <ClCompile Include="src\Physics\Forces\Pressure.cpp" />
     <ClCompile Include="src\Physics\Properties\Density.cpp" />
     <ClCompile Include="src\Physics\Kernel.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="vendor\stbImage\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Physics\Forces\CollisionHandler.h" />
     <ClInclude Include="src\Physics\Forces\Pressure.h" />
     <ClInclude Include="src\Physics\PhysicsSpecification.h" />
     <ClInclude Include="src\Physics\Properties\Density.h" />
