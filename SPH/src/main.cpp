@@ -4,8 +4,8 @@ int main()
 {
 	ApplicationSpecification spec;
 	PhysicsSpecification physSpec;
-	physSpec.Width = spec.Width;
-	physSpec.Height = spec.Height;
+	physSpec.Width = spec.Width / physSpec.MetersToPixel;
+	physSpec.Height = spec.Height / physSpec.MetersToPixel;
 	physSpec.GravityAcceleration = 0.0f;
 	
 

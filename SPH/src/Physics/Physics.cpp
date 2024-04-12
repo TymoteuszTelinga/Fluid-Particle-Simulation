@@ -12,6 +12,6 @@ void Physics::Apply(std::vector<Particle>& particles, const float deltaTime) con
 
 void Physics::Update(std::vector<Particle>& particles, const float deltaTime) const{
 	for (Particle& particle : particles) {
-		particle.Update(deltaTime, p_spec.MetersToPixel);
+		particle.Update(deltaTime);
 	}
 }

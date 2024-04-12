@@ -7,7 +7,7 @@ public:
 	Particle(float xPos, float yPos)
 		: position(xPos, yPos), velocity(0.0f, 0.0f), force(0.0f, 0.0f), density(0.0f), pressure(0.0f) {};
 
-	void Update(float deltaTime, float environmentScale);
+	void Update(float deltaTime);
 	void AddForce(const glm::vec2& force);
 	void AddPartialDensity(const float density);
 	void SetPressure(const float pressure);
@@ -25,7 +25,7 @@ public:
 private:
 	void ResetTemporaryProperties();
 	void ApplyForce(float deltaTime);
-	void UpdatePosition(float deltaTime, float environmentScale);
+	void UpdatePosition(float deltaTime);
 
 private:
 	glm::vec2 position;

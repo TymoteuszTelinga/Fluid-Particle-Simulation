@@ -5,19 +5,19 @@
 #include "Physics/Kernel.h"
 
 struct PhysicsSpecification {
-	uint32_t Width = 800;
-	uint32_t Height = 800;
-	float MetersToPixel = 100.0f;
+	float Width = 8.0f;
+	float Height = 8.0f;
+	const float MetersToPixel = 100.0f; // 100 px = 1m
 
-	float ParticleRadius = 2.5f;
-	float ParticleMass = 1.0f;
-	float CollisionDamping = 0.2f;
+	float ParticleRadius = 0.025f; // meters
+	float ParticleMass = 1.0f; // kilogram
+	float CollisionDamping = 0.2f; // universal unit
 
-	float GravityAcceleration = 9.81f;
-	float GasConstant = 126.0f;
-	float RestDensity = 0.01f;
+	float GravityAcceleration = 9.81f; // m/s^2
+	float GasConstant = 20.0f; 
+	float RestDensity = 0.5f; // kg/m^3
 
 	KernelFunc DensityKernel = Kernel::Poly6;
 	KernelFunc PressureKernelDeriv = Kernel::Spiky3Deriv;
-	float KernelRange = 30.0f;
+	float KernelRange = 0.5f; // meters
 };

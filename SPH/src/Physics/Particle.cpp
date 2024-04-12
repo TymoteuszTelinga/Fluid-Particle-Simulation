@@ -1,10 +1,10 @@
 #include "Particle.h"
 
 
-void Particle::Update(float deltaTime, float environmentScale) {
+void Particle::Update(float deltaTime) {
 	ApplyForce(deltaTime);
 	ResetTemporaryProperties();
-	UpdatePosition(deltaTime, environmentScale);
+	UpdatePosition(deltaTime);
 }
 
 void Particle::AddForce(const glm::vec2& force) {
@@ -55,8 +55,8 @@ void Particle::ResetTemporaryProperties() {
 	this->pressure = 0.0f;
 }
 
-void Particle::UpdatePosition(float deltaTime, float environmentScale) {
-	this->position += this->velocity * deltaTime * environmentScale;
+void Particle::UpdatePosition(float deltaTime) {
+	this->position += this->velocity * deltaTime;
 }
 
 float Particle::calculateDistance(const Particle& otherParticle)const {

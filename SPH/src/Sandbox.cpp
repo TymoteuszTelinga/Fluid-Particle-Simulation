@@ -11,9 +11,11 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 
 	l_Physics = CreateScope<Physics>(p_spec);
 
-	m_Particles.reserve(400);
+	m_Particles.reserve(800);
 	for (size_t i = 0; i < m_Particles.capacity(); i++) {
-		m_Particles.emplace_back(rand() % spec.Width, rand() % spec.Height);
+		float x_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Width;
+		float y_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Height;
+		m_Particles.emplace_back(x_pos, y_pos);
 	}
 }
 
@@ -45,9 +47,8 @@ void Sandbox::OnRender()
 	Renderer::BeginScene(*m_Camera);
 	
 	for (Particle& particle : m_Particles) {
-		Renderer::DrawQuad(particle.GetPosition(), m_Tint);
+		Renderer::DrawQuad(particle.GetPosition() * l_Physics->getSpecification().MetersToPixel, m_Tint);
 	}
-
 	Renderer::EndScene();
 
 	ImGui::Begin("Test");
@@ -62,22 +63,27 @@ void Sandbox::OnRender()
 		ImGui::ColorEdit3("Particle", &m_Tint.r);
 		
 	}
-	ImGui::SetNextItemOpen(true);
+
 	if (ImGui::CollapsingHeader("Physics")) {
 		PhysicsSpecification& spec = this->l_Physics->getSpecification();
 
+		if (ImGui::Button("Reset velocity")) {
+			for (Particle& p : m_Particles) {
+				p.SetVelocity(glm::vec2(0.0f, 0.0f));
+			}
+		}
 		ImGui::SeparatorText("Particle");
-		ImGui::DragFloat("Particle radius", &spec.ParticleRadius, 0.1f, 0.05f, 1e5);
+		ImGui::DragFloat("Particle radius", &spec.ParticleRadius, 0.001f, 0.001f, 10.0f);
 		ImGui::DragFloat("Particle mass", &spec.ParticleMass, 0.05f, 0.05f, 1e5);
 
 		ImGui::SeparatorText("Forces");
 		ImGui::DragFloat("Collision Damping", &spec.CollisionDamping, 0.05f, 0.0f, 1.0f);
-		ImGui::DragFloat("Gravity force", &spec.GravityAcceleration, 0.005f, -1e5, 1e5);
+		ImGui::DragFloat("Gravity force", &spec.GravityAcceleration, 0.05f, -1e5, 1e5);
 		ImGui::DragFloat("Gas constant", &spec.GasConstant, 1.0f, 0.0f, 1e8);
-		ImGui::DragFloat("Rest density", &spec.RestDensity, 0.00001f, 0.0f, 1e5, "%.5f");
+		ImGui::DragFloat("Rest density", &spec.RestDensity, 0.05f, 0.0f, 1e5, "%.2f");
 
 		ImGui::SeparatorText("Smoothing Kernels");
-		ImGui::DragFloat("Kernel range", &spec.KernelRange, 0.005f, 0.05f, 1e5);
+		ImGui::DragFloat("Kernel range", &spec.KernelRange, 0.01f, 0.05f, 1e5);
 	}
 	ImGui::End();
 
