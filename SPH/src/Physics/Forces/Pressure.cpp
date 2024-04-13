@@ -14,13 +14,24 @@ void Pressure::Apply(std::vector<Particle>& particles, float deltaTime) {
 			if (slope == 0) {
 				continue;
 			}
+			glm::vec2 direction = CalculateDirection(center, other, distance);
 
-			glm::vec2 direction = (other.GetPosition() - center.GetPosition()) / distance;
-			glm::vec2 pressureCoef = -direction * p_spec.ParticleMass * slope * (center.GetPressure() + other.GetPressure()) * 0.5f;
-			center.AddForce(pressureCoef / other.GetDensity());
-			other.AddForce(-pressureCoef / center.GetDensity());
+			float pressureSum = (center.GetPressure() + other.GetPressure());
+			float densityProduct = (center.GetDensity() * other.GetDensity());
+			glm::vec2 pressureCoef = -p_spec.ParticleMass * pressureSum * 0.5f * direction *  slope;
+			center.AddForce(pressureCoef / densityProduct);
+			other.AddForce(-pressureCoef / densityProduct);
 		}
 	}
+}
+
+glm::vec2 Pressure::CalculateDirection(const Particle& first, const Particle& second, const float distance)const {
+	if (distance == 0) {
+		return glm::vec2(1, 0);
+	}
+
+	glm::vec2 offset = (second.GetPosition() - first.GetPosition());
+	return offset / distance;
 }
 
 void Pressure::CalculatePressures(std::vector<Particle>& particles) {

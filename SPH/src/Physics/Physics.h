@@ -31,6 +31,7 @@ public:
 
 private:
 	void Update(std::vector<Particle>& particles, const float deltaTime) const;
+	void PredictParticlePositions(std::vector<Particle>& particles, const float deltaTime) const;
 
 private:
 	PhysicsSpecification& p_spec;
@@ -38,5 +39,7 @@ private:
 	Scope<Pressure> l_Pressure;
 	Scope<Density> l_Density;
 	Scope<CollisionHandler> l_CollisionHandler;
+
+	Ref<
 };
 

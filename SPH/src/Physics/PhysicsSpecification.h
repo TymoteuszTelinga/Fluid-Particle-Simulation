@@ -15,9 +15,9 @@ struct PhysicsSpecification {
 
 	float GravityAcceleration = 9.81f; // m/s^2
 	float GasConstant = 20.0f; 
-	float RestDensity = 0.5f; // kg/m^3
+	float RestDensity = 1.0f; // kg/m^3
 
 	KernelFunc DensityKernel = Kernel::Poly6;
 	KernelFunc PressureKernelDeriv = Kernel::Spiky3Deriv;
-	float KernelRange = 0.5f; // meters
+	float KernelRange = 2.0f; // meters
 };

@@ -7,6 +7,16 @@ void Particle::Update(float deltaTime) {
 	UpdatePosition(deltaTime);
 }
 
+void Particle::PredictionUpdate(float deltaTime) {
+	ApplyForce(deltaTime);
+	ResetTemporaryProperties();
+	PredictPosition(deltaTime);
+}
+
+void Particle::PredictPosition(float deltaTime) {
+	predicted_position = position + velocity * deltaTime;
+}
+
 void Particle::AddForce(const glm::vec2& force) {
 	this->force += force;
 }
@@ -18,6 +28,11 @@ void Particle::AddPartialDensity(const float density) {
 glm::vec2 Particle::GetPosition()const
 {
 	return this->position;
+}; 
+
+glm::vec2 Particle::GetPredictedPosition()const
+{
+	return this->predicted_position;
 };
 
 glm::vec2 Particle::GetVelocity()const
@@ -46,7 +61,7 @@ void Particle::SetPressure(const float pressure) {
 }
 
 void Particle::ApplyForce(float deltaTime) {
-	this->velocity += this->force * deltaTime / this->density;
+	this->velocity += this->force * deltaTime;
 }
 
 void Particle::ResetTemporaryProperties() {
@@ -60,6 +75,6 @@ void Particle::UpdatePosition(float deltaTime) {
 }
 
 float Particle::calculateDistance(const Particle& otherParticle)const {
-	return sqrt(pow(this->position.x - otherParticle.GetPosition().x, 2) +
-		pow(this->position.y - otherParticle.GetPosition().y, 2));
+	return sqrt(pow(this->predicted_position.x - otherParticle.GetPredictedPosition().x, 2) +
+		pow(this->predicted_position.y - otherParticle.GetPredictedPosition().y, 2));
 }

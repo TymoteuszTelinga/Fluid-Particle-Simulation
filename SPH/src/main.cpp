@@ -7,7 +7,6 @@ int main()
 	physSpec.Width = spec.Width / physSpec.MetersToPixel;
 	physSpec.Height = spec.Height / physSpec.MetersToPixel;
 	physSpec.GravityAcceleration = 0.0f;
-	
 
 	Sandbox* app = new Sandbox(spec, physSpec);
 	app->Run();

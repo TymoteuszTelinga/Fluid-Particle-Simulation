@@ -13,6 +13,7 @@ public:
 private:
 	void CalculatePressures(std::vector<Particle>& particles);
 	float CalculatePressure(const Particle& particle);
+	glm::vec2 CalculateDirection(const Particle& first, const Particle& second, const float distance)const;
 
 	PhysicsSpecification& p_spec;
 };
