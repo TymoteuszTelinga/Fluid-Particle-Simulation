@@ -63,5 +63,5 @@ void Pressure::CalculatePressures(std::vector<Particle>& particles) {
 }
 
 float Pressure::CalculatePressure(const Particle& particle) {
-	return p_spec.GasConstant * (particle.GetDensity() - p_spec.RestDensity);
+	return p_spec.GasConstant * std::max(0.0f,(particle.GetDensity() - p_spec.RestDensity));
 }

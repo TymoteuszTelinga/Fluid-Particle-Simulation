@@ -9,15 +9,17 @@ struct PhysicsSpecification {
 	float Height = 8.0f;
 	const float MetersToPixel = 100.0f; // 100 px = 1m
 
-	float ParticleRadius = 0.025f; // meters
+	float ParticleRadius = 0.05f; // meters
 	float ParticleMass = 1.0f; // kilogram
 	float CollisionDamping = 0.2f; // universal unit
 
 	float GravityAcceleration = 9.81f; // m/s^2
-	float GasConstant = 20.0f; 
-	float RestDensity = 1.0f; // kg/m^3
+	float GasConstant = 5.0f; 
+	float RestDensity = 1.5f; // kg/m^3
+	float ViscosityStrength = 7.0f; 
 
 	KernelFunc DensityKernel = Kernel::Poly6;
 	KernelFunc PressureKernelDeriv = Kernel::Spiky3Deriv;
+	KernelFunc ViscosityKernelSecondDeriv = Kernel::Poly6;
 	float KernelRange = 0.5f; // meters
 };

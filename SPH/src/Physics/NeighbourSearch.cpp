@@ -1,6 +1,5 @@
 #include "NeighbourSearch.h"
 
-
 void NeighbourSearch::UpdateSpatialLookup(std::vector<Particle>& particles) {
 	PrepareLookup(particles.size());
 	FillSpatialLookup(particles);
@@ -82,9 +81,7 @@ void NeighbourSearch::FillStartIndices() {
 	size_t prevKey = UINT64_MAX;
 	for (int i = 0; i < spatialLookup->size(); i++) {
 		size_t cellKey = spatialLookup->operator[](i).cellKey;
-		if (cellKey >= startIndices->size()) {
-			cellKey = startIndices->size() - 1;
-		}
+
 		if (cellKey != prevKey) {
 			startIndices->operator[](cellKey) = i;
 		}
@@ -94,8 +91,13 @@ void NeighbourSearch::FillStartIndices() {
 
 size_t NeighbourSearch::PositionToCellKey(glm::vec2 position) const {
 	int cellRows = (int)(p_spec.Width / p_spec.KernelRange) + 1;
+	int cellCols = (int)(p_spec.Height / p_spec.KernelRange) + 1;
+
 	int cellX = (int)(position.x / p_spec.KernelRange);
 	int cellY = (int)(position.y / p_spec.KernelRange);
+
+	cellX = std::max(0,std::min(cellRows - 1, cellX));
+	cellY = std::max(0, std::min(cellCols - 1, cellY));
 
 	return cellX + cellY * cellRows;
 }

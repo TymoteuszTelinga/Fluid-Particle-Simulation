@@ -16,6 +16,11 @@ void Physics::Apply(std::vector<Particle>& particles, const float deltaTime) con
 		l_Pressure->Apply(particles, i, neighbours);
 	}
 
+	//for (int i = 0; i < particles.size(); i++) {
+	//	Ref<std::vector<size_t>> neighbours = l_NeighbourSearch->GetParticleNeighbours(particles, i);
+	//	l_Viscosity->Apply(particles, i, neighbours);
+	//}
+
 	//l_Density->Calculate(particles);
 	//l_Pressure->Apply(particles);
 

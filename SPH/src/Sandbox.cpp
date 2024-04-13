@@ -11,15 +11,15 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 
 	l_Physics = CreateScope<Physics>(p_spec);
 
-	int particles_amount = 1000;
+	int particles_amount = 2000;
 	int row_amount = int(sqrt(particles_amount));
 	m_Particles.reserve(particles_amount);
 	for (size_t i = 0; i < m_Particles.capacity(); i++) {
 
-		float x_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Width;
-		float y_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Height;
-		//float x_pos = 0.1 + i % row_amount * p_spec.ParticleRadius * 5.0f;
-		//float y_pos = 0.1 + i / row_amount * p_spec.ParticleRadius * 5.0f;
+		//float x_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Width;
+		//float y_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Height;
+		float x_pos = p_spec.Width/3 + i % row_amount * p_spec.ParticleRadius * 2.0f;
+		float y_pos = p_spec.Height/3 + i / row_amount * p_spec.ParticleRadius * 2.0f;
 		m_Particles.emplace_back(x_pos, y_pos);
 	}
 }
@@ -84,8 +84,9 @@ void Sandbox::OnRender()
 		ImGui::SeparatorText("Forces");
 		ImGui::DragFloat("Collision Damping", &spec.CollisionDamping, 0.05f, 0.0f, 1.0f);
 		ImGui::DragFloat("Gravity force", &spec.GravityAcceleration, 0.05f, -1e5, 1e5);
-		ImGui::DragFloat("Gas constant", &spec.GasConstant, 1.0f, 0.0f, 1e8);
-		ImGui::DragFloat("Rest density", &spec.RestDensity, 0.05f, 0.0f, 1e5, "%.2f");
+		ImGui::DragFloat("Gas constant", &spec.GasConstant, 0.05f, 0.0f, 1e4);
+		ImGui::DragFloat("Rest density", &spec.RestDensity, 0.05f, 0.0f, 1e4, "%.2f");
+		ImGui::DragFloat("Viscosity Strength", &spec.ViscosityStrength, 0.05f, 0.0f, 1e4, "%.2f");
 
 		ImGui::SeparatorText("Smoothing Kernels");
 		ImGui::DragFloat("Kernel range", &spec.KernelRange, 0.01f, 0.05f, 1e5);
