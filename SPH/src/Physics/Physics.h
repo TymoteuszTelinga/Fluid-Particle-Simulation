@@ -12,6 +12,7 @@
 #include "Physics/Forces/Gravity.h"
 #include "Physics/Forces/Pressure.h"
 #include "Physics/Forces/CollisionHandler.h"
+#include "Physics/NeighbourSearch.h"
 
 class Physics
 {
@@ -21,6 +22,7 @@ public:
 		l_Density = CreateScope<Density>(spec);
 		l_Pressure = CreateScope<Pressure>(spec);
 		l_CollisionHandler = CreateScope<CollisionHandler>(spec);
+		l_NeighbourSearch = CreateScope<NeighbourSearch>(spec);
 	}
 
 	void Apply(std::vector<Particle>& particles, const float deltaTime) const;
@@ -39,7 +41,6 @@ private:
 	Scope<Pressure> l_Pressure;
 	Scope<Density> l_Density;
 	Scope<CollisionHandler> l_CollisionHandler;
-
-	Ref<
+	Scope<NeighbourSearch> l_NeighbourSearch;
 };
 

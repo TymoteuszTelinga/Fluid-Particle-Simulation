@@ -11,15 +11,15 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 
 	l_Physics = CreateScope<Physics>(p_spec);
 
-	int particles_amount = 800;
+	int particles_amount = 1000;
 	int row_amount = int(sqrt(particles_amount));
 	m_Particles.reserve(particles_amount);
 	for (size_t i = 0; i < m_Particles.capacity(); i++) {
 
-	//	float x_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Width;
-	//	float y_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Height;
-		float x_pos = 0.1 + i % row_amount * p_spec.ParticleRadius * 5.0f;
-		float y_pos = 0.1 + i / row_amount * p_spec.ParticleRadius * 5.0f;
+		float x_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Width;
+		float y_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Height;
+		//float x_pos = 0.1 + i % row_amount * p_spec.ParticleRadius * 5.0f;
+		//float y_pos = 0.1 + i / row_amount * p_spec.ParticleRadius * 5.0f;
 		m_Particles.emplace_back(x_pos, y_pos);
 	}
 }

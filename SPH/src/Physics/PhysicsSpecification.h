@@ -19,5 +19,5 @@ struct PhysicsSpecification {
 
 	KernelFunc DensityKernel = Kernel::Poly6;
 	KernelFunc PressureKernelDeriv = Kernel::Spiky3Deriv;
-	float KernelRange = 2.0f; // meters
+	float KernelRange = 0.5f; // meters
 };

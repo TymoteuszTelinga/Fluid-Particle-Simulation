@@ -5,8 +5,19 @@ void Physics::Apply(std::vector<Particle>& particles, const float deltaTime) con
 	l_Gravity->Apply(particles, deltaTime);
 	PredictParticlePositions(particles, 1.0/120);
 
-	l_Density->Calculate(particles);
-	l_Pressure->Apply(particles, deltaTime);
+	l_NeighbourSearch->UpdateSpatialLookup(particles);
+	for(int i = 0; i < particles.size(); i++){
+		Ref<std::vector<size_t>> neighbours = l_NeighbourSearch->GetParticleNeighbours(particles, i);
+		l_Density->Calculate(particles, i, neighbours);
+	}
+
+	for (int i = 0; i < particles.size(); i++) {
+		Ref<std::vector<size_t>> neighbours = l_NeighbourSearch->GetParticleNeighbours(particles, i);
+		l_Pressure->Apply(particles, i, neighbours);
+	}
+
+	//l_Density->Calculate(particles);
+	//l_Pressure->Apply(particles);
 
 	Update(particles, deltaTime);
 	l_CollisionHandler->Resolve(particles);

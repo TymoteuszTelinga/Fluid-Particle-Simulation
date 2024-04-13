@@ -1,7 +1,7 @@
 #include "Pressure.h"
 
 
-void Pressure::Apply(std::vector<Particle>& particles, float deltaTime) {
+void Pressure::Apply(std::vector<Particle>& particles) {
 	CalculatePressures(particles);
 
 	for (int i = 0; i < particles.size()-1; i++) {
@@ -22,6 +22,28 @@ void Pressure::Apply(std::vector<Particle>& particles, float deltaTime) {
 			center.AddForce(pressureCoef / densityProduct);
 			other.AddForce(-pressureCoef / densityProduct);
 		}
+	}
+}
+
+void Pressure::Apply(std::vector<Particle>& particles, size_t particleIndex, Ref<std::vector<size_t>> neighbours) {
+	Particle& center = particles[particleIndex];
+	for (size_t j : *neighbours) {
+		if (particleIndex == j) {
+			continue;
+		}
+		Particle& other = particles[j];
+
+		float distance = center.calculateDistance(other);
+		float slope = p_spec.PressureKernelDeriv(distance, p_spec.KernelRange);
+		if (slope == 0) {
+			continue;
+		}
+		glm::vec2 direction = CalculateDirection(center, other, distance);
+
+		float pressureSum = CalculatePressure(center) + CalculatePressure(other);
+		float densityProduct = (center.GetDensity() * other.GetDensity());
+		glm::vec2 pressureCoef = -p_spec.ParticleMass * pressureSum * 0.5f * direction * slope;
+		center.AddForce(pressureCoef / densityProduct);
 	}
 }
 
