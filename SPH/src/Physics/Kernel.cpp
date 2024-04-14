@@ -20,7 +20,7 @@ float Kernel::Spiky3(float distance, float radius) {
 float Kernel::Poly6Deriv(float distance, float radius) {
 	if (distance <= radius) {
 		float diff =  radius * radius - distance * distance;
-		return Kernel::Poly6DerivFactor * distance * diff * diff / pow(radius, 7);
+		return Kernel::Poly6DerivFactor * distance * diff * diff / pow(radius, 8);
 	}
 	return 0;
 }
