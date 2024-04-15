@@ -5,13 +5,19 @@
 #include "Core/Input.h"
 
 Sandbox::Sandbox(const ApplicationSpecification& spec)
-	:Application(spec), m_Tint(1.0f)
+	:Application(spec), m_Tint(1.0f), m_Width(spec.Width), m_Height(spec.Height)
 {
-	m_Camera = CreateScope<Camera>(0, spec.Width, 0, spec.Height);
+	m_Camera = CreateScope<Camera>(spec.Width, spec.Height);
 
+	const int halfWidth = spec.Width / 2;
+	const int halfHeight = spec.Height / 2;
 	for (size_t i = 0; i < m_Positions.size(); i++)
 	{
-		m_Positions[i] = glm::vec2(rand() % spec.Width, rand() % spec.Height);
+		int x = rand() % spec.Width;
+		x -= halfWidth;
+		int y = rand() % spec.Height;
+		y -= halfHeight;
+		m_Positions[i] = glm::vec2(x , y);
 	}
 }
 
@@ -19,10 +25,12 @@ void Sandbox::OnEvent(Event& e)
 {
 	EventDispatcher Dispacher(e);
 	Dispacher.Dispatch<WindowResizeEvent>(BIND_EVENT(Sandbox::Resize));
+	Dispacher.Dispatch<ScrollEvent>(BIND_EVENT(Sandbox::Scroll));
 }
 
 void Sandbox::OnUpdate(float DeltaTime)
 {
+
 	m_Count++;
 	m_CountTime += DeltaTime;
 
@@ -34,6 +42,36 @@ void Sandbox::OnUpdate(float DeltaTime)
 		m_CountTime = 0.0f;
 		m_Count = 0;
 	}
+
+	glm::vec3 cameraPos = m_Camera->GetPosition();
+	bool bMoved = false;
+	//Movement
+	if (Input::IsKeyDown(GLFW_KEY_W))
+	{
+		cameraPos.y += m_CameraSpeed * DeltaTime;
+		bMoved = true;
+	}
+	else if (Input::IsKeyDown(GLFW_KEY_S))
+	{
+		cameraPos.y -= m_CameraSpeed * DeltaTime;
+		bMoved = true;
+	}
+
+	if (Input::IsKeyDown(GLFW_KEY_D))
+	{
+		cameraPos.x += m_CameraSpeed * DeltaTime;
+		bMoved = true;
+	}
+	else if (Input::IsKeyDown(GLFW_KEY_A))
+	{
+		cameraPos.x -= m_CameraSpeed * DeltaTime;
+		bMoved = true;
+	}
+
+	if (bMoved)
+	{
+		m_Camera->SetPosition(cameraPos);
+	}
 }
 
 void Sandbox::OnRender()
@@ -44,6 +82,7 @@ void Sandbox::OnRender()
 	{
 		Renderer::DrawQuad(m_Positions[i],m_Tint);
 	}
+	Renderer::DrawQuad(glm::vec2(0.f,0.f), glm::vec3(1,0,0));
 
 	Renderer::EndScene();
 
@@ -54,6 +93,8 @@ void Sandbox::OnRender()
 	ImGui::Text("FPS %d", m_FPS);
 	ImGui::Text("Frame Time %f ms", m_FrameTime);
 	ImGui::Separator();
+	ImGui::DragFloat("Camera speed", &m_CameraSpeed, 1.0f, 5.0f, 500.0f);
+	ImGui::Text("Camera zoom: %.2f", m_Camera->GetZoomLevel());
 	ImGui::ColorEdit3("Particle", &m_Tint.r);
 	ImGui::End();
 
@@ -63,13 +104,14 @@ void Sandbox::OnRender()
 
 bool Sandbox::Resize(WindowResizeEvent& e)
 {
-	m_Camera->SetProjection(0, e.GetWidth(), 0, e.GetHeight());
+	m_Camera->Resize(e.GetWidth(), e.GetHeight());
 	m_Width = e.GetWidth();
 	m_Height = e.GetHeight();
+	return true;
+}
 
-	for (size_t i = 0; i < m_Positions.size(); i++)
-	{
-		m_Positions[i] = glm::vec2(rand() % m_Width, rand() % m_Height);
-	}
+bool Sandbox::Scroll(ScrollEvent& e)
+{
+	m_Camera->Zoom(-e.GetY()*0.1);
 	return true;
 }

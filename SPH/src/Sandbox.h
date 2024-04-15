@@ -23,20 +23,24 @@ public:
 
 private:
 	bool Resize(WindowResizeEvent& e);
+	bool Scroll(ScrollEvent& e);
 
 private:
+	//Camera
 	Scope<Camera> m_Camera;
+	float m_CameraSpeed = 100.0f;
 
-	std::array<glm::vec2, 4000> m_Positions;
+	//Rendering
+	std::array<glm::vec2, 1000> m_Positions;
 	glm::vec3 m_Tint;
 
-
-	float m_Offset = 0.0f;
+	//Debug info
 	float m_FrameTime = 0.0f;
 	float m_CountTime = 0.0f;
 	int m_FPS = 0;
 	int m_Count = 0;
 
+	//
 	int m_Width = 640;
 	int m_Height = 640;
 };
