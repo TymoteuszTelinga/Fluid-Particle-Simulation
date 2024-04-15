@@ -53,9 +53,12 @@ void Pressure::ApplyToParticle(std::vector<Particle>& particles, size_t particle
 		glm::vec2 direction = CalculateDirection(center, other, distance);
 
 		float pressureSum = CalculatePressure(center) + CalculatePressure(other);
+		float nearPressureSum = CalculateNearPressure(center) + CalculateNearPressure(other);
 		float densityProduct = (center.GetDensity() * other.GetDensity());
 		glm::vec2 pressureCoef = -p_spec.ParticleMass * pressureSum * 0.5f * direction * slope;
+		glm::vec2 nearPressureCoef = -p_spec.ParticleMass * nearPressureSum * 0.5f * direction * slope;
 		center.AddForce(pressureCoef / densityProduct);
+		center.AddForce(nearPressureCoef / (center.GetDensity() * other.GetNearDensity()));
 	}
 }
 
@@ -71,4 +74,8 @@ glm::vec2 Pressure::CalculateDirection(const Particle& first, const Particle& se
 
 float Pressure::CalculatePressure(const Particle& particle) const {
 	return p_spec.GasConstant * std::max(0.0f,(particle.GetDensity() - p_spec.RestDensity));
+}
+
+float Pressure::CalculateNearPressure(const Particle& particle) const {
+	return particle.GetNearDensity() * p_spec.NearPressureCoef;
 }

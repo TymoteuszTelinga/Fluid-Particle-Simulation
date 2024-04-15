@@ -25,6 +25,10 @@ void Particle::AddPartialDensity(const float density) {
 	this->density += density;
 }
 
+void Particle::AddPartialNearDensity(const float nearDensity){
+	this->nearDensity += nearDensity;
+}
+
 glm::vec2 Particle::GetPosition()const
 {
 	return this->position;
@@ -44,6 +48,11 @@ float Particle::GetDensity()const {
 	return this->density;
 }
 
+float Particle::GetNearDensity() const
+{
+	return this->nearDensity;
+}
+
 void Particle::SetPosition(const glm::vec2& position) {
 	this->position = position;
 }
@@ -59,6 +68,7 @@ void Particle::ApplyForce(float deltaTime) {
 void Particle::ResetTemporaryProperties() {
 	this->force = glm::vec2(0, 0);
 	this->density = 0.0f;
+	this->nearDensity = 0.0f;
 }
 
 void Particle::UpdatePosition(float deltaTime) {

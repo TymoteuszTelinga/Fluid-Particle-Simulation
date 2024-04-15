@@ -17,6 +17,7 @@ struct PhysicsSpecification {
 	float GasConstant = 5.0f; 
 	float RestDensity = 1.5f; // kg/m^3
 	float ViscosityStrength = 7.0f; 
+	float NearPressureCoef = 5.0f;
 
 	KernelFunc DensityKernel = Kernel::Poly6;
 	KernelFunc PressureKernelDeriv = Kernel::Spiky3Deriv;

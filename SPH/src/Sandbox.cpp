@@ -11,7 +11,7 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 
 	l_Physics = CreateScope<Physics>(p_spec);
 
-	int particles_amount = 3000;
+	int particles_amount = 1500;
 	int row_amount = int(sqrt(particles_amount));
 	m_Particles.reserve(particles_amount);
 	for (size_t i = 0; i < m_Particles.capacity(); i++) {
@@ -87,6 +87,7 @@ void Sandbox::OnRender()
 		ImGui::DragFloat("Gas constant", &spec.GasConstant, 0.05f, 0.0f, 1e4);
 		ImGui::DragFloat("Rest density", &spec.RestDensity, 0.05f, 0.0f, 1e4, "%.2f");
 		ImGui::DragFloat("Viscosity Strength", &spec.ViscosityStrength, 0.05f, 0.0f, 1e4, "%.2f");
+		ImGui::DragFloat("Near Pressure Coef", &spec.NearPressureCoef, 0.1f, -10.0f, 10.0f, "%.1f");
 
 		ImGui::SeparatorText("Smoothing Kernels");
 		ImGui::DragFloat("Kernel range", &spec.KernelRange, 0.01f, 0.05f, 100);
