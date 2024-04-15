@@ -10,6 +10,7 @@ struct ApplicationSpecification
 	std::string Name = "Application";
 	uint32_t Width = 1280;
 	uint32_t Height = 720;
+	uint32_t MinUpdateFrameRate = 30;
 };
 
 class Application
@@ -41,6 +42,7 @@ private:
 	bool m_Runing = false;
 	float m_DeltaTime = 0.0f;
 	float m_LastTime = 0.0f;
+	bool m_Minimized = false;
 
 private:
 	static Application* s_Instance;
