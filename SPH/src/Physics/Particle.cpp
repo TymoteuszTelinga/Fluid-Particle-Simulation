@@ -44,20 +44,12 @@ float Particle::GetDensity()const {
 	return this->density;
 }
 
-float Particle::GetPressure()const {
-	return this->pressure;
-}
-
 void Particle::SetPosition(const glm::vec2& position) {
 	this->position = position;
 }
 
 void Particle::SetVelocity(const glm::vec2& velocity) {
 	this->velocity = velocity;
-}
-
-void Particle::SetPressure(const float pressure) {
-	this->pressure = pressure;
 }
 
 void Particle::ApplyForce(float deltaTime) {
@@ -67,7 +59,6 @@ void Particle::ApplyForce(float deltaTime) {
 void Particle::ResetTemporaryProperties() {
 	this->force = glm::vec2(0, 0);
 	this->density = 0.0f;
-	this->pressure = 0.0f;
 }
 
 void Particle::UpdatePosition(float deltaTime) {

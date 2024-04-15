@@ -1,10 +1,37 @@
 #include "CollisionHandler.h"
 
 void CollisionHandler::Resolve(std::vector<Particle>& particles) const {
-	for (Particle& p : particles) {
-		ResolveCollision(p);
+	size_t particlesAmount = particles.size();
+	size_t threadsAmount = 8;
+	size_t particlesPerThread = particlesAmount / threadsAmount;
+
+	std::vector<Ref<std::thread>> threads;
+
+	for (int i = 0; i < threadsAmount; i++) {
+		size_t firstIndex = i * particlesPerThread;
+		threads.push_back(RunSubResolve(particles, firstIndex, particlesPerThread));
+	}
+	if (8 * particlesPerThread < particlesAmount) {
+		threads.push_back(RunSubResolve(particles, threadsAmount * particlesPerThread,
+			particlesAmount - threadsAmount * particlesPerThread));
+	}
+
+	for (Ref<std::thread> thread : threads) {
+		thread->join();
 	}
 }
+
+Ref<std::thread> CollisionHandler::RunSubResolve(std::vector<Particle>& particles, size_t firstIndex, size_t amount) const {
+	Ref<std::thread> thread = CreateRef<std::thread>(&CollisionHandler::SubResolve, this, std::ref(particles), firstIndex, amount);
+	return thread;
+}
+
+void CollisionHandler::SubResolve(std::vector<Particle>& particles, size_t firstIndex, size_t amount)const {
+	for (size_t index = firstIndex; index < firstIndex + amount; index++) {
+		ResolveCollision(particles[index]);
+	}
+}
+
 
 void CollisionHandler::ResolveCollision(Particle& particle) const {
 	glm::vec2 velocity = particle.GetVelocity();

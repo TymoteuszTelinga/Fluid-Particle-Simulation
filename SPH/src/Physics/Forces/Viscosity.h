@@ -5,14 +5,16 @@
 
 #include "Physics/Particle.h"
 #include "Physics/PhysicsSpecification.h"
+#include "Physics/NeighbourSearch.h"
 
 class Viscosity
 {
 public:
-	Viscosity(PhysicsSpecification& spec): p_spec(spec){}
+	Viscosity(PhysicsSpecification& spec, Ref<NeighbourSearch> neighbourSearch) : p_spec(spec), neighbourSearch(neighbourSearch) {}
 	void Apply(std::vector<Particle>& particles, size_t particleIndex, Ref<std::vector<size_t>> neighbours);
 
 private:
 	PhysicsSpecification& p_spec;
+	Ref<NeighbourSearch> neighbourSearch;
 };
 

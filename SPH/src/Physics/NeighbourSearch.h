@@ -19,24 +19,21 @@ public:
 	NeighbourSearch(PhysicsSpecification& spec) : p_spec(spec) {};
 
 	void UpdateSpatialLookup(std::vector<Particle>& particles);
-	Ref<std::vector<size_t>> GetParticleNeighbours(std::vector<Particle>& particles, size_t particleIndex);
-
-	Ref<std::vector<LookupEntry>> GetSpatialLookup()const;
-	Ref<std::vector<int>> GetStartIndices() const;
+	Ref<std::vector<size_t>> GetParticleNeighbours(std::vector<Particle>& particles, size_t particleIndex)const;
 
 private:
 	void PrepareLookup(size_t lookupSize);
 	void FillSpatialLookup(std::vector<Particle>& particles);
 	void SortLookUp();
 	void FillStartIndices();
-	void AddNeighbours(Ref<std::vector<size_t>> neighbours, std::vector<Particle>& particles, size_t particleIndex, size_t cellKey);
+	void AddNeighbours(Ref<std::vector<size_t>> neighbours, std::vector<Particle>& particles, size_t particleIndex, size_t cellKey)const;
 
 	size_t PositionToCellKey(glm::vec2 position) const;
 	
 
 private:
 	PhysicsSpecification& p_spec;
-	Ref<std::vector<LookupEntry>> spatialLookup;
-	Ref<std::vector<int>> startIndices;
+	Scope<std::vector<LookupEntry>> spatialLookup;
+	Scope<std::vector<int>> startIndices;
 };
 

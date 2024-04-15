@@ -11,7 +11,7 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 
 	l_Physics = CreateScope<Physics>(p_spec);
 
-	int particles_amount = 1500;
+	int particles_amount = 3000;
 	int row_amount = int(sqrt(particles_amount));
 	m_Particles.reserve(particles_amount);
 	for (size_t i = 0; i < m_Particles.capacity(); i++) {

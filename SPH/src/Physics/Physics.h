@@ -19,12 +19,12 @@ class Physics
 {
 public:
 	Physics(PhysicsSpecification& spec): p_spec(spec) {
+		l_NeighbourSearch = CreateRef<NeighbourSearch>(spec);
 		l_Gravity = CreateScope<Gravity>(spec);
-		l_Density = CreateScope<Density>(spec);
-		l_Pressure = CreateScope<Pressure>(spec);
-		l_Viscosity = CreateScope<Viscosity>(spec);
+		l_Density = CreateScope<Density>(spec, l_NeighbourSearch);
+		l_Pressure = CreateScope<Pressure>(spec, l_NeighbourSearch);
+		l_Viscosity = CreateScope<Viscosity>(spec, l_NeighbourSearch);
 		l_CollisionHandler = CreateScope<CollisionHandler>(spec);
-		l_NeighbourSearch = CreateScope<NeighbourSearch>(spec);
 	}
 
 	void Apply(std::vector<Particle>& particles, const float deltaTime) const;
@@ -44,6 +44,6 @@ private:
 	Scope<Density> l_Density;
 	Scope<Viscosity> l_Viscosity;
 	Scope<CollisionHandler> l_CollisionHandler;
-	Scope<NeighbourSearch> l_NeighbourSearch;
+	Ref<NeighbourSearch> l_NeighbourSearch;
 };
 
