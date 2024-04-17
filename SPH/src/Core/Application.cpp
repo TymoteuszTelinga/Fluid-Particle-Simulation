@@ -52,29 +52,40 @@ void Application::Run()
 	m_Runing = true;
 	ImGuiIO& io = ImGui::GetIO();
 
+	const float maxUpdateTime = 1.f / (m_Specification.MinUpdateFrameRate-2);
+
 	//main loop
+	m_LastTime = glfwGetTime();
 	while (m_Window->IsOpen() && m_Runing)
 	{
 		m_Window->OnUpdate();
 
-		OnUpdate(m_DeltaTime);
-
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-		//ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-
-		Renderer::Clear();
-		OnRender();
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		if (!m_Minimized)
 		{
-			GLFWwindow* backup_current_context = glfwGetCurrentContext();
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-			glfwMakeContextCurrent(backup_current_context);
+			while (m_DeltaTime > maxUpdateTime)
+			{
+				OnUpdate(maxUpdateTime);
+				m_DeltaTime -= maxUpdateTime;
+			}
+			OnUpdate(m_DeltaTime);
+
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+			//ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
+			Renderer::Clear();
+			OnRender();
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				GLFWwindow* backup_current_context = glfwGetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				glfwMakeContextCurrent(backup_current_context);
+			}
 		}
 
 		float time = glfwGetTime();
@@ -94,6 +105,14 @@ void Application::OnEventApp(Event& e)
 
 bool Application::ResizeVieport(WindowResizeEvent& e)
 {
+	if (e.GetWidth() == 0 || e.GetHeight() == 0)
+	{
+		m_Minimized = true;
+		return false;
+	}
+
+	m_Minimized = false;
 	Renderer::Resize(e.GetWidth(), e.GetHeight());
-	return true;
+
+	return false;
 }

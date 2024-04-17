@@ -38,6 +38,4 @@ private:
 	static void NextBatch();
 	static void Flush();
 
-private:
-	static glm::mat4 s_ViewProjectionMatrix;
 };

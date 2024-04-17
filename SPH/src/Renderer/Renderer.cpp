@@ -45,7 +45,16 @@ struct RendererData
 
 static RendererData s_Data;
 
-glm::mat4 Renderer::s_ViewProjectionMatrix = glm::mat4(1);
+struct CameraData
+{
+	glm::mat4 ViewProjectionMatrix = glm::mat4(1);
+	glm::vec3 CameraPosition = glm::vec3(0.f);
+	glm::vec2 BBoxMin = glm::vec2(0);
+	glm::vec2 BBoxMax = glm::vec2(0);
+};
+
+static CameraData s_CameraData;
+
 Renderer::Statistics s_Stats;
 
 void Renderer::Init()
@@ -123,7 +132,10 @@ void Renderer::Clear()
 
 void Renderer::BeginScene(const Camera& camera)
 {
-	s_ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+	s_CameraData.ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+	s_CameraData.CameraPosition = camera.GetPosition();
+	s_CameraData.BBoxMax = glm::vec2(camera.GetPosition()) + camera.GetExtends() + glm::vec2(5.0f);
+	s_CameraData.BBoxMin = glm::vec2(camera.GetPosition()) - camera.GetExtends() - glm::vec2(5.0f);
 
 	StartBatch();
 }
@@ -135,6 +147,11 @@ void Renderer::DrawQuad(const glm::vec2& position)
 
 void Renderer::DrawQuad(const glm::vec2& position, const glm::vec3& color)
 {
+	if (position.x < s_CameraData.BBoxMin.x || position.y < s_CameraData.BBoxMin.y || position.x > s_CameraData.BBoxMax.x || position.y > s_CameraData.BBoxMax.y)
+	{
+		return;
+	}
+
 	glm::mat4 transform = glm::translate(glm::mat4(1), { position.x, position.y, 1.0 });
 
 	constexpr size_t quadVertexCount = 4;
@@ -191,7 +208,7 @@ void Renderer::Flush()
 
 	s_Data.QuadShader->Bind();
 	s_Data.QuadShader->SetUniform1i("ColorMap", 1);
-	s_Data.QuadShader->SetUniformMat4f("MVPMatrix", s_ViewProjectionMatrix);
+	s_Data.QuadShader->SetUniformMat4f("MVPMatrix", s_CameraData.ViewProjectionMatrix);
 	s_Data.QuadTexture->Bind(1);
 	s_Data.QuadVertexArray->Bind();
 	s_Data.QuadIndexBuffer->Bind();

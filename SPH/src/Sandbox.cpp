@@ -5,9 +5,9 @@
 #include "Core/Input.h"
 
 Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec)
-	:Application(spec), m_Tint(1.0f)
+	:Application(spec), m_Tint(1.0f), m_Width(spec.Width), m_Height(spec.Height)
 {
-	m_Camera = CreateScope<Camera>(0, spec.Width, 0, spec.Height);
+	m_Camera = CreateScope<Camera>(spec.Width, spec.Height);
 
 	l_Physics = CreateScope<Physics>(p_spec);
 
@@ -28,10 +28,12 @@ void Sandbox::OnEvent(Event& e)
 {
 	EventDispatcher Dispacher(e);
 	Dispacher.Dispatch<WindowResizeEvent>(BIND_EVENT(Sandbox::Resize));
+	Dispacher.Dispatch<ScrollEvent>(BIND_EVENT(Sandbox::Scroll));
 }
 
 void Sandbox::OnUpdate(float DeltaTime)
 {
+
 	m_Count++;
 	m_CountTime += DeltaTime;
 
@@ -43,7 +45,37 @@ void Sandbox::OnUpdate(float DeltaTime)
 		m_CountTime = 0.0f;
 		m_Count = 0;
 	}
-	//printf("%f\n", DeltaTime);
+
+	glm::vec3 cameraPos = m_Camera->GetPosition();
+	bool bMoved = false;
+	//Movement
+	if (Input::IsKeyDown(GLFW_KEY_W))
+	{
+		cameraPos.y += m_CameraSpeed * DeltaTime;
+		bMoved = true;
+	}
+	else if (Input::IsKeyDown(GLFW_KEY_S))
+	{
+		cameraPos.y -= m_CameraSpeed * DeltaTime;
+		bMoved = true;
+	}
+
+	if (Input::IsKeyDown(GLFW_KEY_D))
+	{
+		cameraPos.x += m_CameraSpeed * DeltaTime;
+		bMoved = true;
+	}
+	else if (Input::IsKeyDown(GLFW_KEY_A))
+	{
+		cameraPos.x -= m_CameraSpeed * DeltaTime;
+		bMoved = true;
+	}
+
+	if (bMoved)
+	{
+		m_Camera->SetPosition(cameraPos);
+	}
+
 	l_Physics->Apply(m_Particles, DeltaTime);
 }
 
@@ -65,6 +97,8 @@ void Sandbox::OnRender()
 		ImGui::Text("Frame Time %f ms", m_FrameTime);
 	}
 	if (ImGui::CollapsingHeader("Render")) {
+    ImGui::DragFloat("Camera speed", &m_CameraSpeed, 1.0f, 5.0f, 500.0f);
+	  ImGui::Text("Camera zoom: %.2f", m_Camera->GetZoomLevel());
 		ImGui::ColorEdit3("Particle", &m_Tint.r);
 		
 	}
@@ -100,13 +134,14 @@ void Sandbox::OnRender()
 
 bool Sandbox::Resize(WindowResizeEvent& e)
 {
-	m_Camera->SetProjection(0, e.GetWidth(), 0, e.GetHeight());
+	m_Camera->Resize(e.GetWidth(), e.GetHeight());
 	m_Width = e.GetWidth();
 	m_Height = e.GetHeight();
+	return true;
+}
 
-	//for (Particle& particle : m_Particles) {
-	//	particle.SetPosition(glm::vec2(rand() % m_Width, rand() % m_Height));
-	//	}
-
+bool Sandbox::Scroll(ScrollEvent& e)
+{
+	m_Camera->Zoom(-e.GetY()*0.1);
 	return true;
 }

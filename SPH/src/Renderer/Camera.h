@@ -5,9 +5,10 @@
 class Camera
 {
 public:
-	Camera(float left, float right, float bottom, float top);
+	Camera(float width, float height);
 
-	void SetProjection(float left, float right, float bottom, float top);
+	void Resize(float width, float height);
+	void Zoom(float delta);
 
 	const glm::vec3& GetPosition() const { return m_Position; }
 	void SetPosition(const glm::vec3& position) { m_Position = position; RecalculateViewMatrix(); }
@@ -18,8 +19,13 @@ public:
 	const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 	const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 	const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+
+	float GetZoomLevel() const { return m_ZoomLevel; };
+	glm::vec2 GetExtends() const {return glm::vec2(m_AspectRatio*m_HalfHeight * m_ZoomLevel, m_HalfHeight * m_ZoomLevel); };
+
 private:
 	void RecalculateViewMatrix();
+	void RecalculateProjectionMatrix();
 
 private:
 	glm::mat4 m_ProjectionMatrix;
@@ -28,5 +34,9 @@ private:
 
 	glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
 	float m_Rotation = 0.0f;
+
+	float m_AspectRatio = 0.0f;
+	float m_HalfHeight;
+	float m_ZoomLevel = 1.f;
 };
 
