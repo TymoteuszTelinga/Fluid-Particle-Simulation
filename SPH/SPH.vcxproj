@@ -150,6 +150,16 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Physics\NeighbourSearch.cpp" />
+    <ClCompile Include="src\Physics\Forces\CollisionHandler.cpp" />
+    <ClCompile Include="src\Physics\Forces\Pressure.cpp" />
+    <ClCompile Include="src\Physics\Properties\Density.cpp" />
+    <ClCompile Include="src\Physics\Kernel.cpp" />
+    <ClCompile Include="src\Physics\Particle.cpp" />
+    <ClCompile Include="src\Physics\Forces\Gravity.cpp" />
+    <ClCompile Include="src\Physics\Physics.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\Input.cpp" />
     <ClCompile Include="src\Core\Window.cpp" />
@@ -170,8 +180,18 @@
     <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="vendor\stbImage\stb_image.cpp" />
+    <ClCompile Include="src\Physics\Forces\Viscosity.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Physics\NeighbourSearch.h" />
+    <ClInclude Include="src\Physics\Forces\CollisionHandler.h" />
+    <ClInclude Include="src\Physics\Forces\Pressure.h" />
+    <ClInclude Include="src\Physics\PhysicsSpecification.h" />
+    <ClInclude Include="src\Physics\Properties\Density.h" />
+    <ClInclude Include="src\Physics\Kernel.h" />
+    <ClInclude Include="src\Physics\Particle.h" />
+    <ClInclude Include="src\Physics\Forces\Gravity.h" />
+    <ClInclude Include="src\Physics\Physics.h" />
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Base.h" />
     <ClInclude Include="src\Core\Input.h" />
@@ -196,6 +216,7 @@
     <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
     <ClInclude Include="vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\Physics\Forces\Viscosity.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\fragment.glsl" />

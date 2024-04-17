@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include <array>
+#include <vector>
 
 #include "Renderer/Camera.h"
 #include "Renderer/VertexArray.h"
@@ -11,10 +12,14 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Texture.h"
 
+
+#include "Physics/Physics.h"
+#include "Physics/Particle.h"
+
 class Sandbox : public Application
 {
 public:
-	Sandbox(const ApplicationSpecification& spec);
+	Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec);
 	~Sandbox() {};
 
 	virtual void OnEvent(Event& e) override;
@@ -26,15 +31,17 @@ private:
 	bool Scroll(ScrollEvent& e);
 
 private:
+	Scope<Physics> l_Physics;
 	//Camera
 	Scope<Camera> m_Camera;
 	float m_CameraSpeed = 100.0f;
 
-	//Rendering
-	std::array<glm::vec2, 1000> m_Positions;
-	glm::vec3 m_Tint;
 
-	//Debug info
+	//Rendering
+	std::vector<Particle> m_Particles;
+	glm::vec3 m_Tint;
+  
+  //Debug info
 	float m_FrameTime = 0.0f;
 	float m_CountTime = 0.0f;
 	int m_FPS = 0;
