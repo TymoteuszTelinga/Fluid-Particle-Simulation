@@ -18,8 +18,8 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 
 		//float x_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Width;
 		//float y_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Height;
-		float x_pos = p_spec.Width/10 + i % row_amount * p_spec.ParticleRadius * 2.0f;
-		float y_pos = p_spec.Height/10 + i / row_amount * p_spec.ParticleRadius * 2.0f;
+		float x_pos =  i % row_amount * p_spec.ParticleRadius * 2.0f;
+		float y_pos =  i / row_amount * p_spec.ParticleRadius * 2.0f;
 		m_Particles.emplace_back(x_pos, y_pos);
 	}
 }

@@ -37,10 +37,13 @@ void CollisionHandler::ResolveCollision(Particle& particle) const {
 	glm::vec2 velocity = particle.GetVelocity();
 	glm::vec2 position = particle.GetPosition();
 
-	float min_x = p_spec.ParticleRadius;
-	float max_x = p_spec.Width - p_spec.ParticleRadius;
-	float min_y = p_spec.ParticleRadius;
-	float max_y = p_spec.Height - p_spec.ParticleRadius;
+	float halfWidth = p_spec.Width / 2.0f;
+	float halfHeight = p_spec.Height / 2.0f;
+
+	float min_x = -halfWidth + p_spec.ParticleRadius;
+	float max_x = halfWidth - p_spec.ParticleRadius;
+	float min_y = -halfHeight + p_spec.ParticleRadius;
+	float max_y = halfHeight - p_spec.ParticleRadius;
 
 	if (position.x <= min_x) {
 		position.x = min_x + (min_x - position.x);

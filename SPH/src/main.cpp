@@ -4,8 +4,8 @@ int main()
 {
 	ApplicationSpecification spec;
 	PhysicsSpecification physSpec;
-	physSpec.Width = spec.Width / physSpec.MetersToPixel;
-	physSpec.Height = spec.Height / physSpec.MetersToPixel;
+	physSpec.Width = 20.0f;
+	physSpec.Height = 20.0f;
 	//physSpec.GravityAcceleration = 0.0f;
 
 	Sandbox* app = new Sandbox(spec, physSpec);
