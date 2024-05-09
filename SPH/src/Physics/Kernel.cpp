@@ -9,9 +9,17 @@ float Kernel::Poly6(float distance, float radius) {
 }
 
 float Kernel::Spiky3(float distance, float radius) {
-	if (distance <= radius) {
+	if (distance < radius) {
 		float diff = radius - distance;
-		return Kernel::SpikyFactor * pow(diff, 3) / pow(radius, 5);
+		return Kernel::Spiky3Factor * pow(diff, 3) / pow(radius, 5);
+	}
+	return 0;
+}
+
+float Kernel::Spiky2(float distance, float radius) {
+	if (distance < radius) {
+		float diff = radius - distance;
+		return Kernel::Spiky2Factor * pow(diff, 2) / pow(radius, 4);
 	}
 	return 0;
 }
@@ -28,7 +36,15 @@ float Kernel::Poly6Deriv(float distance, float radius) {
 float Kernel::Spiky3Deriv(float distance, float radius) {
 	if (distance <= radius) {
 		float diff = radius - distance;
-		return Kernel::SpikyDerivFactor * pow(diff, 2) / pow(radius, 5);
+		return -Kernel::Spiky3DerivFactor * pow(diff, 2) / pow(radius, 5);
+	}
+	return 0;
+}
+
+float Kernel::Spiky2Deriv(float distance, float radius) {
+	if (distance <= radius) {
+		float diff = radius - distance;
+		return -Kernel::Spiky2DerivFactor * diff / pow(radius, 4);
 	}
 	return 0;
 }

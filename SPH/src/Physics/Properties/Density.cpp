@@ -39,9 +39,9 @@ void Density::CalculateForParticle(std::vector<Particle>& particles, size_t part
 	Particle& center = particles[particleIndex];
 	for (size_t j : *neighbours) {
 		Particle& otherParticle = particles[j];
-		float distance = center.calculateDistance(otherParticle);
+		float distance = center.calculatePredictedDistance(otherParticle);
 		float density = p_spec.ParticleMass * p_spec.DensityKernel(distance, p_spec.KernelRange);
-		float nearDensity = std::pow((1.0f - distance / p_spec.KernelRange), 3);
+		float nearDensity = p_spec.NearDensityKernel(distance, p_spec.KernelRange);
 		center.AddPartialDensity(density);
 		center.AddPartialNearDensity(nearDensity);
 	}

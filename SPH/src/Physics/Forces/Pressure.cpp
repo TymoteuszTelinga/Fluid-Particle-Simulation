@@ -45,35 +45,36 @@ void Pressure::ApplyToParticle(std::vector<Particle>& particles, size_t particle
 		}
 		Particle& other = particles[j];
 
-		float distance = center.calculateDistance(other);
+		float distance = center.calculatePredictedDistance(other);
 		float slope = p_spec.PressureKernelDeriv(distance, p_spec.KernelRange);
+		float nearSlope = p_spec.NearPressureKernelDeriv(distance, p_spec.KernelRange);
 		if (slope == 0) {
 			continue;
 		}
 		glm::vec2 direction = CalculateDirection(center, other, distance);
 
-		float pressureSum = CalculatePressure(center) + CalculatePressure(other);
-		float nearPressureSum = CalculateNearPressure(center) + CalculateNearPressure(other);
+		float pressureShare = (CalculatePressure(center) + CalculatePressure(other)) * 0.5f;
+		float nearPressureShare = (CalculateNearPressure(center) + CalculateNearPressure(other)) * 0.5f;
 		float densityProduct = (center.GetDensity() * other.GetDensity());
-		glm::vec2 pressureCoef = -p_spec.ParticleMass * pressureSum * 0.5f * direction * slope;
-		glm::vec2 nearPressureCoef = -p_spec.ParticleMass * nearPressureSum * 0.5f * direction * slope;
+		glm::vec2 pressureCoef = p_spec.ParticleMass * pressureShare * direction * slope;
+		glm::vec2 nearPressureCoef = p_spec.ParticleMass * nearPressureShare * direction * nearSlope;
 		center.AddForce(pressureCoef / densityProduct);
 		center.AddForce(nearPressureCoef / (center.GetDensity() * other.GetNearDensity()));
 	}
 }
 
 glm::vec2 Pressure::CalculateDirection(const Particle& first, const Particle& second, const float distance) const {
-	if (distance == 0) {
-		return glm::vec2(1, 0);
+	if (distance <= 0.0f) {
+		return glm::vec2(0, 1);
 	}
 
-	glm::vec2 offset = (second.GetPosition() - first.GetPosition());
+	glm::vec2 offset = (second.GetPredictedPosition() - first.GetPredictedPosition());
 	return offset / distance;
 }
 
 
 float Pressure::CalculatePressure(const Particle& particle) const {
-	return p_spec.GasConstant * std::max(0.0f,(particle.GetDensity() - p_spec.RestDensity));
+	return p_spec.GasConstant * (particle.GetDensity() - p_spec.RestDensity);
 }
 
 float Pressure::CalculateNearPressure(const Particle& particle) const {

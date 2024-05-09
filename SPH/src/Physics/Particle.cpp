@@ -75,7 +75,7 @@ void Particle::UpdatePosition(float deltaTime) {
 	this->position += this->velocity * deltaTime;
 }
 
-float Particle::calculateDistance(const Particle& otherParticle)const {
+float Particle::calculatePredictedDistance(const Particle& otherParticle)const {
 	return sqrt(pow(this->predicted_position.x - otherParticle.GetPredictedPosition().x, 2) +
 		pow(this->predicted_position.y - otherParticle.GetPredictedPosition().y, 2));
 }

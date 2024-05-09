@@ -19,8 +19,10 @@ struct PhysicsSpecification {
 	float ViscosityStrength = 7.0f; 
 	float NearPressureCoef = 5.0f;
 
-	KernelFunc DensityKernel = Kernel::Poly6;
-	KernelFunc PressureKernelDeriv = Kernel::Spiky3Deriv;
-	KernelFunc ViscosityKernelSecondDeriv = Kernel::Poly6;
+	KernelFunc DensityKernel = Kernel::Spiky2;
+	KernelFunc NearDensityKernel = Kernel::Spiky3;
+	KernelFunc PressureKernelDeriv = Kernel::Spiky2Deriv;
+	KernelFunc NearPressureKernelDeriv = Kernel::Spiky3Deriv;
+	KernelFunc ViscosityKernel = Kernel::Poly6;
 	float KernelRange = 0.5f; // meters
 };

@@ -23,7 +23,7 @@ public:
 	void SetPosition(const glm::vec2& position);
 	void SetVelocity(const glm::vec2& velocity);
 
-	float calculateDistance(const Particle& otherParticle)const;
+	float calculatePredictedDistance(const Particle& otherParticle)const;
 
 private:
 	void ResetTemporaryProperties();

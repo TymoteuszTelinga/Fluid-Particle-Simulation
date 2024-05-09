@@ -32,16 +32,16 @@ void NeighbourSearch::AddNeighbours(Ref<std::vector<size_t>> neighbours, std::ve
 	}
 
 	size_t startIndice = startIndices->operator[](cellKey);
-	float sqrtRange = p_spec.KernelRange * p_spec.KernelRange;
+	float sqrRange = p_spec.KernelRange * p_spec.KernelRange;
 	for (size_t i = startIndice; i < spatialLookup->size(); i++) {
 		if (spatialLookup->operator[](i).cellKey != cellKey) {
 			break;
 		}
 
 		size_t selectedParticleIndex = spatialLookup->operator[](i).particleIndex;
-		float sqrtDistance = particles[selectedParticleIndex].calculateDistance(particles[particleIndex]);
+		float distance = particles[selectedParticleIndex].calculatePredictedDistance(particles[particleIndex]);
 
-		if (sqrtDistance < sqrtRange) {
+		if (distance*distance <= sqrRange) {
 			neighbours->push_back(selectedParticleIndex);
 		}
 	}

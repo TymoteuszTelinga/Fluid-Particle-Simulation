@@ -11,16 +11,36 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 
 	l_Physics = CreateScope<Physics>(p_spec);
 
-	int particles_amount = 1500;
+	int particles_amount = 100;
 	int row_amount = int(sqrt(particles_amount));
 	m_Particles.reserve(particles_amount);
-	for (size_t i = 0; i < m_Particles.capacity(); i++) {
+	glm::vec2 s(2, 7);
+	int numX = ceil(sqrt(s.x / s.y * particles_amount + (s.x - s.y) * (s.x - s.y) / (4 * s.y * s.y)) - (s.x - s.y) / (2 * s.y));
+	int numY = ceil(particles_amount / (float)numX);
+	glm::vec2 spawnCentre(3.35, 0.51);
 
-		//float x_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Width;
-		//float y_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Height;
-		float x_pos =  i % row_amount * p_spec.ParticleRadius * 2.0f;
-		float y_pos =  i / row_amount * p_spec.ParticleRadius * 2.0f;
-		m_Particles.emplace_back(x_pos, y_pos);
+	int i = 0;
+	for (int y = 0; y < numY; y++)
+	{
+		for (int x = 0; x < numX; x++)
+		{
+			if (i >= particles_amount) {
+				break;
+			}
+
+			float tx = numX <= 1 ? 0.5f : x / (numX - 1.0f);
+			float ty = numY <= 1 ? 0.5f : y / (numY - 1.0f);
+
+			glm::vec2 pos((tx - 0.5f) * s.x, (ty - 0.5f) * s.y);
+			pos += spawnCentre;
+			i++;
+			//float x_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Width;
+			//float y_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Height;
+			//center= 
+			//float x_pos =  i % row_amount * p_spec.ParticleRadius * 2.0f;
+			//float y_pos =  i / row_amount * p_spec.ParticleRadius * 2.0f;
+			m_Particles.emplace_back(pos.x, pos.y);
+		}
 	}
 }
 
@@ -75,8 +95,17 @@ void Sandbox::OnUpdate(float DeltaTime)
 	{
 		m_Camera->SetPosition(cameraPos);
 	}
+	static int count = 0;
+	if (count <= 10) {
+		count++;
+		return;
+	}
 
-	l_Physics->Apply(m_Particles, DeltaTime);
+	for (int i = 0; i < 1; i++) {
+		l_Physics->Apply(m_Particles, DeltaTime/3.0);
+	}
+	//printf("%f\n", DeltaTime);
+	//l_Physics->Apply(m_Particles, 1 /180.0f);
 }
 
 void Sandbox::OnRender()

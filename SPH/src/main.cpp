@@ -4,9 +4,15 @@ int main()
 {
 	ApplicationSpecification spec;
 	PhysicsSpecification physSpec;
-	physSpec.Width = 20.0f;
-	physSpec.Height = 20.0f;
-	//physSpec.GravityAcceleration = 0.0f;
+	physSpec.Width = 17.1f;
+	physSpec.Height = 9.3f;
+	physSpec.GravityAcceleration = 12.0f;
+	physSpec.CollisionDamping = 0.05;
+	physSpec.KernelRange = 0.35;
+	physSpec.RestDensity = 55;
+	physSpec.GasConstant = 500;
+	physSpec.NearPressureCoef = 17.9;
+	physSpec.ViscosityStrength = 0.06;
 
 	Sandbox* app = new Sandbox(spec, physSpec);
 	app->Run();
