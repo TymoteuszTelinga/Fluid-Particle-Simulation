@@ -6,7 +6,7 @@
 #include "Core/Base.h"
 
 #include "Physics/PhysicsSpecification.h"
-#include "Physics/Particle.h"
+#include "Physics/Particles.h"
 
 struct LookupEntry {
 	size_t particleIndex = 0;
@@ -18,15 +18,15 @@ class NeighbourSearch
 public:
 	NeighbourSearch(PhysicsSpecification& spec) : p_spec(spec) {};
 
-	void UpdateSpatialLookup(std::vector<Particle>& particles);
-	Ref<std::vector<size_t>> GetParticleNeighbours(std::vector<Particle>& particles, size_t particleIndex)const;
+	void UpdateSpatialLookup(Ref<Particles> particles);
+	Ref<std::vector<size_t>> GetParticleNeighbours(Ref<Particles> particles, size_t particleIndex)const;
 
 private:
 	void PrepareLookup(size_t lookupSize);
-	void FillSpatialLookup(std::vector<Particle>& particles);
+	void FillSpatialLookup(Ref<Particles> particles);
 	void SortLookUp();
 	void FillStartIndices();
-	void AddNeighbours(Ref<std::vector<size_t>> neighbours, std::vector<Particle>& particles, size_t particleIndex, size_t cellKey)const;
+	void AddNeighbours(Ref<std::vector<size_t>> neighbours, Ref<Particles> particles, size_t particleIndex, size_t cellKey)const;
 
 	size_t PositionToCellKey(glm::vec2 position) const;
 	

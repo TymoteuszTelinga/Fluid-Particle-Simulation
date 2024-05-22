@@ -1,7 +1,7 @@
 #include "CollisionHandler.h"
 
-void CollisionHandler::Resolve(std::vector<Particle>& particles) const {
-	size_t particlesAmount = particles.size();
+void CollisionHandler::Resolve(Ref<Particles> particles) const {
+	size_t particlesAmount = particles->getSize();
 	size_t threadsAmount = 8;
 	size_t particlesPerThread = particlesAmount / threadsAmount;
 
@@ -11,7 +11,7 @@ void CollisionHandler::Resolve(std::vector<Particle>& particles) const {
 		size_t firstIndex = i * particlesPerThread;
 		threads.push_back(RunSubResolve(particles, firstIndex, particlesPerThread));
 	}
-	if (8 * particlesPerThread < particlesAmount) {
+	if (threadsAmount * particlesPerThread < particlesAmount) {
 		threads.push_back(RunSubResolve(particles, threadsAmount * particlesPerThread,
 			particlesAmount - threadsAmount * particlesPerThread));
 	}
@@ -21,21 +21,21 @@ void CollisionHandler::Resolve(std::vector<Particle>& particles) const {
 	}
 }
 
-Ref<std::thread> CollisionHandler::RunSubResolve(std::vector<Particle>& particles, size_t firstIndex, size_t amount) const {
-	Ref<std::thread> thread = CreateRef<std::thread>(&CollisionHandler::SubResolve, this, std::ref(particles), firstIndex, amount);
+Ref<std::thread> CollisionHandler::RunSubResolve(Ref<Particles> particles, size_t firstIndex, size_t amount) const {
+	Ref<std::thread> thread = CreateRef<std::thread>(&CollisionHandler::SubResolve, this, particles, firstIndex, amount);
 	return thread;
 }
 
-void CollisionHandler::SubResolve(std::vector<Particle>& particles, size_t firstIndex, size_t amount)const {
+void CollisionHandler::SubResolve(Ref<Particles> particles, size_t firstIndex, size_t amount)const {
 	for (size_t index = firstIndex; index < firstIndex + amount; index++) {
-		ResolveCollision(particles[index]);
+		ResolveCollision(particles, index);
 	}
 }
 
 
-void CollisionHandler::ResolveCollision(Particle& particle) const {
-	glm::vec2 velocity = particle.GetVelocity();
-	glm::vec2 position = particle.GetPosition();
+void CollisionHandler::ResolveCollision(Ref<Particles> particles, size_t index) const {
+	glm::vec2 velocity = particles->getVelocity(index);
+	glm::vec2 position = particles->getPosition(index);
 
 	float halfWidth = p_spec.Width / 2.0f;
 	float halfHeight = p_spec.Height / 2.0f;
@@ -63,6 +63,6 @@ void CollisionHandler::ResolveCollision(Particle& particle) const {
 		velocity.y *= -(1 - p_spec.CollisionDamping);
 	}
 
-	particle.SetVelocity(velocity);
-	particle.SetPosition(position);
+	particles->setVelocity(index, velocity);
+	particles->setPosition(index, position);
 }

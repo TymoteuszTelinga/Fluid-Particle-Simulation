@@ -5,17 +5,17 @@
 #include "Core/Base.h"
 
 #include "Physics/PhysicsSpecification.h"
-#include "Physics/Particle.h"
+#include "Physics/Particles.h"
 
 class Gravity
 {
 public:
 	Gravity(PhysicsSpecification& spec) : p_spec(spec) {};
-	void Apply(std::vector<Particle>& particles) const;
+	void Apply(Ref<Particles> particles) const;
 
 private:
-	Ref<std::thread> RunSubApply(std::vector<Particle>& particles, size_t firstIndex, size_t amount)const;
-	void SubApply(std::vector<Particle>& particles, size_t firstIndex, size_t amount)const;
+	Ref<std::thread> RunSubApply(Ref<Particles> particles, size_t firstIndex, size_t amount)const;
+	void SubApply(Ref<Particles> particles, size_t firstIndex, size_t amount)const;
 
 private:
 	PhysicsSpecification& p_spec;

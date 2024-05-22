@@ -8,12 +8,12 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 	:Application(spec), m_Tint(1.0f), m_Width(spec.Width), m_Height(spec.Height)
 {
 	m_Camera = CreateScope<Camera>(spec.Width, spec.Height);
+	m_Physics = CreateScope<Physics>(p_spec);
 
-	l_Physics = CreateScope<Physics>(p_spec);
-
-	int particles_amount = 100;
+	int particles_amount = 1000;
 	int row_amount = int(sqrt(particles_amount));
-	m_Particles.reserve(particles_amount);
+	m_Particles = CreateRef<Particles>(particles_amount);
+
 	glm::vec2 s(2, 7);
 	int numX = ceil(sqrt(s.x / s.y * particles_amount + (s.x - s.y) * (s.x - s.y) / (4 * s.y * s.y)) - (s.x - s.y) / (2 * s.y));
 	int numY = ceil(particles_amount / (float)numX);
@@ -33,13 +33,8 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 
 			glm::vec2 pos((tx - 0.5f) * s.x, (ty - 0.5f) * s.y);
 			pos += spawnCentre;
+			m_Particles->addParticle(pos.x, pos.y);
 			i++;
-			//float x_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Width;
-			//float y_pos = ((float) rand() / (float)RAND_MAX) * p_spec.Height;
-			//center= 
-			//float x_pos =  i % row_amount * p_spec.ParticleRadius * 2.0f;
-			//float y_pos =  i / row_amount * p_spec.ParticleRadius * 2.0f;
-			m_Particles.emplace_back(pos.x, pos.y);
 		}
 	}
 }
@@ -102,7 +97,7 @@ void Sandbox::OnUpdate(float DeltaTime)
 	}
 
 	for (int i = 0; i < 1; i++) {
-		l_Physics->Apply(m_Particles, DeltaTime/3.0);
+		m_Physics->Apply(m_Particles, DeltaTime/3.0);
 	}
 	//printf("%f\n", DeltaTime);
 	//l_Physics->Apply(m_Particles, 1 /180.0f);
@@ -112,9 +107,10 @@ void Sandbox::OnRender()
 {
 	Renderer::BeginScene(*m_Camera);
 	
-	for (Particle& particle : m_Particles) {
-		Renderer::DrawQuad(particle.GetPosition() * l_Physics->getSpecification().MetersToPixel, m_Tint);
+	for (int i = 0; i < m_Particles->getSize(); i++) {
+		Renderer::DrawQuad(m_Particles->getPosition(i) * m_Physics->getSpecification().MetersToPixel, m_Tint);
 	}
+
 	Renderer::EndScene();
 
 	ImGui::Begin("Test");
@@ -133,11 +129,11 @@ void Sandbox::OnRender()
 	}
 
 	if (ImGui::CollapsingHeader("Physics")) {
-		PhysicsSpecification& spec = this->l_Physics->getSpecification();
+		PhysicsSpecification& spec = this->m_Physics->getSpecification();
 
 		if (ImGui::Button("Reset velocity")) {
-			for (Particle& p : m_Particles) {
-				p.SetVelocity(glm::vec2(0.0f, 0.0f));
+			for (int index = 0; index < m_Particles->getSize(); index++) {
+				m_Particles->setVelocity(index, glm::vec2(0.0f, 0.0f));
 			}
 		}
 		ImGui::SeparatorText("Particle");

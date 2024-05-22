@@ -1,16 +1,24 @@
 #include "NeighbourSearch.h"
 
-void NeighbourSearch::UpdateSpatialLookup(std::vector<Particle>& particles) {
-	PrepareLookup(particles.size());
+void NeighbourSearch::UpdateSpatialLookup(Ref<Particles> particles) {
+	PrepareLookup(particles->getSize());
 	FillSpatialLookup(particles);
 	SortLookUp();
 	FillStartIndices();
 }
 
-Ref<std::vector<size_t>> NeighbourSearch::GetParticleNeighbours(std::vector<Particle>& particles, size_t particleIndex)const {
+void NeighbourSearch::PrepareLookup(size_t lookupSize) {
+	this->spatialLookup = CreateScope<std::vector<LookupEntry>>(lookupSize, LookupEntry{ 0,0 });
+
+	int cellRows = (int)(p_spec.Width / p_spec.KernelRange) + 1;
+	int cellCols = (int)(p_spec.Height / p_spec.KernelRange) + 1;
+	this->startIndices = CreateScope<std::vector<int>>(cellRows * cellCols, 0);
+}
+
+Ref<std::vector<size_t>> NeighbourSearch::GetParticleNeighbours(Ref<Particles> particles, size_t particleIndex)const {
 	Ref<std::vector<size_t>> neighbours = CreateRef<std::vector<size_t>>();
 	int cellRows = (int)(p_spec.Width / p_spec.KernelRange) + 1;
-	size_t cellKey = PositionToCellKey(particles[particleIndex].GetPredictedPosition());
+	size_t cellKey = PositionToCellKey(particles->getPredictedPosition(particleIndex));
 
 	AddNeighbours(neighbours, particles, particleIndex, cellKey - cellRows - 1);
 	AddNeighbours(neighbours, particles, particleIndex, cellKey - cellRows);
@@ -26,7 +34,7 @@ Ref<std::vector<size_t>> NeighbourSearch::GetParticleNeighbours(std::vector<Part
 }
 
 
-void NeighbourSearch::AddNeighbours(Ref<std::vector<size_t>> neighbours, std::vector<Particle>& particles, size_t particleIndex, size_t cellKey) const{
+void NeighbourSearch::AddNeighbours(Ref<std::vector<size_t>> neighbours, Ref<Particles> particles, size_t particleIndex, size_t cellKey) const{
 	if (cellKey < 0 || cellKey >= startIndices->size()) {
 		return;
 	}
@@ -39,7 +47,7 @@ void NeighbourSearch::AddNeighbours(Ref<std::vector<size_t>> neighbours, std::ve
 		}
 
 		size_t selectedParticleIndex = spatialLookup->operator[](i).particleIndex;
-		float distance = particles[selectedParticleIndex].calculatePredictedDistance(particles[particleIndex]);
+		float distance = particles->calculatePredictedDistance(selectedParticleIndex, particleIndex);
 
 		if (distance*distance <= sqrRange) {
 			neighbours->push_back(selectedParticleIndex);
@@ -47,18 +55,11 @@ void NeighbourSearch::AddNeighbours(Ref<std::vector<size_t>> neighbours, std::ve
 	}
 }
 
-void NeighbourSearch::PrepareLookup(size_t lookupSize) {
-	this->spatialLookup = CreateScope<std::vector<LookupEntry>>(lookupSize, LookupEntry{ 0,0 });
 
-	int cellRows = (int)(p_spec.Width / p_spec.KernelRange) + 1;
-	int cellCols = (int)(p_spec.Height / p_spec.KernelRange) + 1;
-	this->startIndices = CreateScope<std::vector<int>>(cellRows * cellCols, 0);
-}
 
-void NeighbourSearch::FillSpatialLookup(std::vector<Particle>& particles) {
-	for (size_t i = 0; i < particles.size(); i++) {
-		Particle& p = particles[i];
-		size_t cellKey = PositionToCellKey(p.GetPredictedPosition());
+void NeighbourSearch::FillSpatialLookup(Ref<Particles> particles) {
+	for (size_t i = 0; i < particles->getSize(); i++) {
+		size_t cellKey = PositionToCellKey(particles->getPredictedPosition(i));
 		this->spatialLookup->operator[](i) = LookupEntry{ i, cellKey };
 	}
 }

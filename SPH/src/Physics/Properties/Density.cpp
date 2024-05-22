@@ -1,8 +1,8 @@
 #include "Density.h"
 
 
-void Density::Calculate(std::vector<Particle>& particles)const {
-	size_t particlesAmount = particles.size();
+void Density::Calculate(Ref<Particles> particles)const {
+	size_t particlesAmount = particles->getSize();
 	size_t threadsAmount = 8;
 	size_t particlesPerThread = particlesAmount / threadsAmount;
 
@@ -12,7 +12,7 @@ void Density::Calculate(std::vector<Particle>& particles)const {
 		size_t firstIndex = i * particlesPerThread;
 		threads.push_back(RunSubCalculate(particles, firstIndex, particlesPerThread));
 	}
-	if (8 * particlesPerThread < particlesAmount) {
+	if (threadsAmount * particlesPerThread < particlesAmount) {
 		threads.push_back(RunSubCalculate(particles, threadsAmount * particlesPerThread, 
 			particlesAmount - threadsAmount * particlesPerThread));
 	}
@@ -22,12 +22,12 @@ void Density::Calculate(std::vector<Particle>& particles)const {
 	}
 }
 
-Ref<std::thread> Density::RunSubCalculate(std::vector<Particle>& particles, size_t firstIndex, size_t amount)const {
-	Ref<std::thread> thread = CreateRef<std::thread>(&Density::SubCalculate, this, std::ref(particles), firstIndex, amount);
+Ref<std::thread> Density::RunSubCalculate(Ref<Particles> particles, size_t firstIndex, size_t amount)const {
+	Ref<std::thread> thread = CreateRef<std::thread>(&Density::SubCalculate, this, particles, firstIndex, amount);
 	return thread;
 }
 
-void Density::SubCalculate(std::vector<Particle>& particles, size_t firstIndex, size_t amount) const {
+void Density::SubCalculate(Ref<Particles> particles, size_t firstIndex, size_t amount) const {
 	for (size_t index = firstIndex; index < firstIndex + amount; index++) {
 		Ref<std::vector<size_t>> neighbours = neighbourSearch->GetParticleNeighbours(particles, index);
 		CalculateForParticle(particles, index, neighbours);
@@ -35,15 +35,13 @@ void Density::SubCalculate(std::vector<Particle>& particles, size_t firstIndex, 
 }
 
 
-void Density::CalculateForParticle(std::vector<Particle>& particles, size_t particleIndex, Ref<std::vector<size_t>> neighbours)const {
-	Particle& center = particles[particleIndex];
+void Density::CalculateForParticle(Ref<Particles> particles, size_t particleIndex, Ref<std::vector<size_t>> neighbours)const {
 	for (size_t j : *neighbours) {
-		Particle& otherParticle = particles[j];
-		float distance = center.calculatePredictedDistance(otherParticle);
+		float distance = particles->calculatePredictedDistance(particleIndex, j);
 		float density = p_spec.ParticleMass * p_spec.DensityKernel(distance, p_spec.KernelRange);
 		float nearDensity = p_spec.NearDensityKernel(distance, p_spec.KernelRange);
-		center.AddPartialDensity(density);
-		center.AddPartialNearDensity(nearDensity);
+		particles->addDensity(particleIndex, density);
+		particles->addNearDensity(particleIndex, nearDensity);
 	}
 }
 

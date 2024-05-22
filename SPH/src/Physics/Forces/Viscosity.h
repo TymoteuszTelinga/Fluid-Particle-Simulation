@@ -11,7 +11,7 @@ class Viscosity
 {
 public:
 	Viscosity(PhysicsSpecification& spec, Ref<NeighbourSearch> neighbourSearch) : p_spec(spec), neighbourSearch(neighbourSearch) {}
-	void Apply(std::vector<Particle>& particles, size_t particleIndex, Ref<std::vector<size_t>> neighbours);
+	void Apply(Ref<Particles> particles, size_t particleIndex, Ref<std::vector<size_t>> neighbours);
 
 private:
 	PhysicsSpecification& p_spec;

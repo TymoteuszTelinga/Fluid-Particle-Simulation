@@ -14,7 +14,7 @@
 
 
 #include "Physics/Physics.h"
-#include "Physics/Particle.h"
+#include "Physics/Particles.h"
 
 class Sandbox : public Application
 {
@@ -31,14 +31,13 @@ private:
 	bool Scroll(ScrollEvent& e);
 
 private:
-	Scope<Physics> l_Physics;
+	Scope<Physics> m_Physics;
 	//Camera
 	Scope<Camera> m_Camera;
 	float m_CameraSpeed = 100.0f;
 
 
-	//Rendering
-	std::vector<Particle> m_Particles;
+	Ref<Particles> m_Particles;
 	glm::vec3 m_Tint;
   
   //Debug info

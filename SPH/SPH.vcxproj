@@ -150,6 +150,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Physics\Particles.cpp" />
     <ClCompile Include="src\Physics\NeighbourSearch.cpp" />
     <ClCompile Include="src\Physics\Forces\CollisionHandler.cpp" />
     <ClCompile Include="src\Physics\Forces\Pressure.cpp" />
@@ -183,6 +184,7 @@
     <ClCompile Include="src\Physics\Forces\Viscosity.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Physics\Particles.h" />
     <ClInclude Include="src\Physics\NeighbourSearch.h" />
     <ClInclude Include="src\Physics\Forces\CollisionHandler.h" />
     <ClInclude Include="src\Physics\Forces\Pressure.h" />

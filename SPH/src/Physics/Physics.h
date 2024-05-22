@@ -6,7 +6,7 @@
 
 #include "Physics/PhysicsSpecification.h"
 #include "Physics/Kernel.h"
-#include "Physics/Particle.h"
+#include "Physics/Particles.h"
 
 #include "Physics/Properties/Density.h"
 #include "Physics/Forces/Gravity.h"
@@ -27,7 +27,7 @@ public:
 		l_CollisionHandler = CreateScope<CollisionHandler>(spec);
 	}
 
-	void Apply(std::vector<Particle>& particles, const float deltaTime) const;
+	void Apply(Ref<Particles> particles, const float deltaTime) const;
 
 	PhysicsSpecification& getSpecification() {
 		return p_spec;
@@ -35,7 +35,6 @@ public:
 
 private:
 	void Update(std::vector<Particle>& particles, const float deltaTime) const;
-	void PredictParticlePositions(std::vector<Particle>& particles, const float deltaTime) const;
 
 private:
 	PhysicsSpecification& p_spec;
