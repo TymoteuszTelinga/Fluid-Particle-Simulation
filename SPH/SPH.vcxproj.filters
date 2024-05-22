@@ -81,9 +81,6 @@
     <ClCompile Include="src\Physics\Forces\Gravity.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\Particle.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
     <ClCompile Include="src\Physics\Kernel.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
@@ -183,9 +180,6 @@
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\Forces\Gravity.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Physics\Particle.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\Kernel.h">

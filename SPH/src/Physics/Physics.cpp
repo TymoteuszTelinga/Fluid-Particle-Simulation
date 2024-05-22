@@ -2,6 +2,8 @@
 
 
 void Physics::Apply(Ref<Particles> particles, const float deltaTime) const {
+	m_Kernel->updateFactors(p_spec.KernelRange);
+
 	l_Gravity->Apply(particles);
 	particles->updatePredicted(1.0f / 120.0f);
 
@@ -12,10 +14,4 @@ void Physics::Apply(Ref<Particles> particles, const float deltaTime) const {
 
 	particles->update(deltaTime);
 	l_CollisionHandler->Resolve(particles);
-}
-
-void Physics::Update(std::vector<Particle>& particles, const float deltaTime) const{
-	for (Particle& particle : particles) {
-		particle.Update(deltaTime);
-	}
 }

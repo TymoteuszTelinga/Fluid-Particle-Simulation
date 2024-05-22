@@ -19,12 +19,14 @@ class Physics
 {
 public:
 	Physics(PhysicsSpecification& spec): p_spec(spec) {
+		m_Kernel = CreateRef<Kernel>();
 		l_NeighbourSearch = CreateRef<NeighbourSearch>(spec);
 		l_Gravity = CreateScope<Gravity>(spec);
-		l_Density = CreateScope<Density>(spec, l_NeighbourSearch);
-		l_Pressure = CreateScope<Pressure>(spec, l_NeighbourSearch);
-		l_Viscosity = CreateScope<Viscosity>(spec, l_NeighbourSearch);
+		l_Density = CreateScope<Density>(spec, l_NeighbourSearch, m_Kernel);
+		l_Pressure = CreateScope<Pressure>(spec, l_NeighbourSearch, m_Kernel);
+		l_Viscosity = CreateScope<Viscosity>(spec, l_NeighbourSearch, m_Kernel);
 		l_CollisionHandler = CreateScope<CollisionHandler>(spec);
+		
 	}
 
 	void Apply(Ref<Particles> particles, const float deltaTime) const;
@@ -34,9 +36,6 @@ public:
 	}
 
 private:
-	void Update(std::vector<Particle>& particles, const float deltaTime) const;
-
-private:
 	PhysicsSpecification& p_spec;
 	Scope<Gravity> l_Gravity;
 	Scope<Pressure> l_Pressure;
@@ -44,5 +43,6 @@ private:
 	Scope<Viscosity> l_Viscosity;
 	Scope<CollisionHandler> l_CollisionHandler;
 	Ref<NeighbourSearch> l_NeighbourSearch;
+	Ref<Kernel> m_Kernel;
 };
 

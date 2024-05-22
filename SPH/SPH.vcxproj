@@ -156,7 +156,6 @@
     <ClCompile Include="src\Physics\Forces\Pressure.cpp" />
     <ClCompile Include="src\Physics\Properties\Density.cpp" />
     <ClCompile Include="src\Physics\Kernel.cpp" />
-    <ClCompile Include="src\Physics\Particle.cpp" />
     <ClCompile Include="src\Physics\Forces\Gravity.cpp" />
     <ClCompile Include="src\Physics\Physics.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -191,7 +190,6 @@
     <ClInclude Include="src\Physics\PhysicsSpecification.h" />
     <ClInclude Include="src\Physics\Properties\Density.h" />
     <ClInclude Include="src\Physics\Kernel.h" />
-    <ClInclude Include="src\Physics\Particle.h" />
     <ClInclude Include="src\Physics\Forces\Gravity.h" />
     <ClInclude Include="src\Physics\Physics.h" />
     <ClInclude Include="src\Core\Application.h" />

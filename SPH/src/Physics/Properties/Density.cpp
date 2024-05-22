@@ -38,8 +38,8 @@ void Density::SubCalculate(Ref<Particles> particles, size_t firstIndex, size_t a
 void Density::CalculateForParticle(Ref<Particles> particles, size_t particleIndex, Ref<std::vector<size_t>> neighbours)const {
 	for (size_t j : *neighbours) {
 		float distance = particles->calculatePredictedDistance(particleIndex, j);
-		float density = p_spec.ParticleMass * p_spec.DensityKernel(distance, p_spec.KernelRange);
-		float nearDensity = p_spec.NearDensityKernel(distance, p_spec.KernelRange);
+		float density = p_spec.ParticleMass * p_spec.DensityKernel(distance, p_spec.KernelRange, kernel->Spiky2Factor);
+		float nearDensity = p_spec.NearDensityKernel(distance, p_spec.KernelRange, kernel->Spiky3Factor);
 		particles->addDensity(particleIndex, density);
 		particles->addNearDensity(particleIndex, nearDensity);
 	}

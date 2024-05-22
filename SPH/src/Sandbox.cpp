@@ -10,7 +10,7 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 	m_Camera = CreateScope<Camera>(spec.Width, spec.Height);
 	m_Physics = CreateScope<Physics>(p_spec);
 
-	int particles_amount = 1000;
+	int particles_amount = 600;
 	int row_amount = int(sqrt(particles_amount));
 	m_Particles = CreateRef<Particles>(particles_amount);
 
@@ -97,7 +97,7 @@ void Sandbox::OnUpdate(float DeltaTime)
 	}
 
 	for (int i = 0; i < 1; i++) {
-		m_Physics->Apply(m_Particles, DeltaTime/3.0);
+		m_Physics->Apply(m_Particles, DeltaTime/3.0f);
 	}
 	//printf("%f\n", DeltaTime);
 	//l_Physics->Apply(m_Particles, 1 /180.0f);

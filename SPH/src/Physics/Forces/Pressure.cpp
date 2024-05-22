@@ -44,8 +44,8 @@ void Pressure::ApplyToParticle(Ref<Particles> particles, size_t particleIndex, R
 		}
 
 		float distance = particles->calculatePredictedDistance(particleIndex, j);
-		float slope = p_spec.PressureKernelDeriv(distance, p_spec.KernelRange);
-		float nearSlope = p_spec.NearPressureKernelDeriv(distance, p_spec.KernelRange);
+		float slope = p_spec.PressureKernelDeriv(distance, p_spec.KernelRange, kernel->Spiky2DerivFactor);
+		float nearSlope = p_spec.NearPressureKernelDeriv(distance, p_spec.KernelRange, kernel->Spiky3DerivFactor);
 		if (slope == 0) {
 			continue;
 		}
