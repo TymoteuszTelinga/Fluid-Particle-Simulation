@@ -1,5 +1,10 @@
 #include "Particles.h"
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
+#include "Cuda/Kernels.cuh"
+
 
 Particles::Particles(size_t capacity) : capacity(capacity), size(0)
 {
@@ -17,6 +22,21 @@ Particles::Particles(size_t capacity) : capacity(capacity), size(0)
 
 	densities = new float[capacity];
 	nearDensities = new float[capacity];
+
+	cudaMalloc(&c_positions_x, capacity * sizeof(float));
+	cudaMalloc(&c_positions_y, capacity * sizeof(float));
+	cudaMalloc(&c_predictedPositions_x, capacity * sizeof(float));
+	cudaMalloc(&c_predictedPositions_y, capacity * sizeof(float));
+	cudaMalloc(&c_velocities_x, capacity * sizeof(float));
+	cudaMalloc(&c_velocities_y, capacity * sizeof(float));
+	cudaMalloc(&c_forces_x, capacity * sizeof(float));
+	cudaMalloc(&c_forces_y, capacity * sizeof(float));
+	cudaMalloc(&c_densities, capacity * sizeof(float));
+	cudaMalloc(&c_nearDensities, capacity * sizeof(float));
+
+	cudaMalloc(&c_lookup_index, capacity * sizeof(int));
+	cudaMalloc(&c_lookup_key, capacity * sizeof(int));
+	cudaMalloc(&c_indices, capacity * sizeof(int));
 }
 
 Particles::~Particles() {
@@ -34,6 +54,56 @@ Particles::~Particles() {
 
 	delete[] densities;
 	delete[] nearDensities;
+
+	cudaFree(c_positions_x);
+	cudaFree(c_positions_y);
+	cudaFree(c_predictedPositions_x);
+	cudaFree(c_predictedPositions_y);
+	cudaFree(c_velocities_x);
+	cudaFree(c_velocities_y);
+	cudaFree(c_forces_x);
+	cudaFree(c_forces_y);
+	cudaFree(c_densities);
+	cudaFree(c_nearDensities);
+
+	cudaFree(c_lookup_index);
+	cudaFree(c_lookup_key);
+	cudaFree(c_indices);
+}
+void Particles::sendToCuda() {
+	cudaMemcpy(c_positions_x, positions_x, size * sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(c_positions_y, positions_y, size * sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(c_predictedPositions_x, predictedPositions_x, size * sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(c_predictedPositions_y, predictedPositions_y, size * sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(c_velocities_x, velocities_x, size * sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(c_velocities_y, velocities_y, size * sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(c_forces_x, forces_x, size * sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(c_forces_y, forces_y, size * sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(c_densities, densities, size * sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(c_nearDensities, nearDensities, size * sizeof(float), cudaMemcpyHostToDevice);
+}
+
+void Particles::getFromCudaBeforeSpatial() {
+	cudaMemcpy(predictedPositions_x, c_predictedPositions_x, size * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(predictedPositions_y, c_predictedPositions_y, size * sizeof(float), cudaMemcpyDeviceToHost);
+}
+
+void Particles::getFromCuda() {
+	cudaMemcpy(positions_x, c_positions_x, size * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(positions_y, c_positions_y, size * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(predictedPositions_x, c_predictedPositions_x, size * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(predictedPositions_y, c_predictedPositions_y, size * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(velocities_x, c_velocities_x, size * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(velocities_y, c_velocities_y, size * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(forces_x, c_forces_x, size * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(forces_y, c_forces_y, size * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(densities, c_densities, size * sizeof(int), cudaMemcpyDeviceToHost);
+	cudaMemcpy(nearDensities, c_nearDensities, size * sizeof(int), cudaMemcpyDeviceToHost);
+}
+
+void Particles::updatePredictedCuda(float deltaTime) {
+	UpdatePredictedFromCuda(c_velocities_x, c_velocities_y, c_forces_x, c_forces_y,
+		c_predictedPositions_x, c_predictedPositions_y, c_positions_x, c_positions_y, deltaTime, size);
 }
 
 bool Particles::addParticle(float x_pos, float y_pos) {

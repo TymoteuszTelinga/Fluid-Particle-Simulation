@@ -1,5 +1,8 @@
 #include "Sandbox.h"
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
 int main()
 {
 	ApplicationSpecification spec;
@@ -14,6 +17,7 @@ int main()
 	physSpec.NearPressureCoef = 17.9;
 	physSpec.ViscosityStrength = 0.06;
 
+	cudaSetDevice(0);
 	Sandbox* app = new Sandbox(spec, physSpec);
 	app->Run();
 

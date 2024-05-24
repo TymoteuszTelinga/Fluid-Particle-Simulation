@@ -13,6 +13,7 @@ class Pressure
 public:
 	Pressure(PhysicsSpecification& spec, Ref<NeighbourSearch> neighbourSearch, Ref<Kernel> kernel) : p_spec(spec), neighbourSearch(neighbourSearch), kernel(kernel){}
 	void Apply(Ref<Particles> particles)const;
+	void ApplyCuda(Ref<Particles> particles)const;
 
 private:
 	Ref<std::thread> RunSubApply(Ref<Particles> particles, size_t firstIndex, size_t amount)const;

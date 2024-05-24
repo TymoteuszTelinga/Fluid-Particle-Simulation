@@ -206,9 +206,13 @@
     <ClInclude Include="src\Physics\Particles.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="src\Cuda\Kernels.cuh" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\fragment.glsl" />
     <None Include="src\Shaders\vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\Cuda\Kernels.cu" />
   </ItemGroup>
 </Project>

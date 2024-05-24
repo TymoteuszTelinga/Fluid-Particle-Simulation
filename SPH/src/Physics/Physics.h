@@ -30,6 +30,7 @@ public:
 	}
 
 	void Apply(Ref<Particles> particles, const float deltaTime) const;
+	void ApplyCuda(Ref<Particles> particles, const float deltaTime) const;
 
 	PhysicsSpecification& getSpecification() {
 		return p_spec;

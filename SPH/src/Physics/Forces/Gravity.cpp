@@ -1,5 +1,13 @@
 #include "Gravity.h"
 
+#include "Cuda/Kernels.cuh"
+
+
+
+void Gravity::ApplyCuda(Ref<Particles> particles) const {
+	GravityCuda(particles->c_forces_y, -p_spec.GravityAcceleration, particles->getSize());
+}
+
 void Gravity::Apply(Ref<Particles> particles) const {
 	size_t particlesAmount = particles->getSize();
 	size_t threadsAmount = 8;

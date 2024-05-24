@@ -4,6 +4,8 @@
 #include "Renderer/Renderer.h"
 #include "Core/Input.h"
 
+//#define CUDA
+
 Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec)
 	:Application(spec), m_Tint(1.0f), m_Width(spec.Width), m_Height(spec.Height)
 {
@@ -97,10 +99,12 @@ void Sandbox::OnUpdate(float DeltaTime)
 	}
 
 	for (int i = 0; i < 1; i++) {
-		m_Physics->Apply(m_Particles, DeltaTime/3.0f);
+	#ifdef CUDA
+		m_Physics->ApplyCuda(m_Particles, DeltaTime/3.0f);
+	#else
+		m_Physics->Apply(m_Particles, DeltaTime / 3.0f);
+	#endif // CUDA
 	}
-	//printf("%f\n", DeltaTime);
-	//l_Physics->Apply(m_Particles, 1 /180.0f);
 }
 
 void Sandbox::OnRender()

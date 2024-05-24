@@ -2,7 +2,18 @@
 
 #include <thread>
 
+#include "Cuda/Kernels.cuh"
 #include "Core/Base.h"
+
+
+void Pressure::ApplyCuda(Ref<Particles> particles) const {
+	int cellRows = (int)(p_spec.Width / p_spec.KernelRange) + 1;
+	int cellCols = (int)(p_spec.Height / p_spec.KernelRange) + 1;
+
+	PressureCuda(particles->c_predictedPositions_x, particles->c_predictedPositions_y, particles->c_forces_x, particles->c_forces_y, particles->c_densities,
+		particles->c_nearDensities, p_spec.KernelRange, kernel->Spiky2DerivFactor, kernel->Spiky3DerivFactor, p_spec.GasConstant, p_spec.RestDensity,
+		p_spec.NearPressureCoef, particles->getSize(), particles->c_lookup_index, particles->c_lookup_key, cellRows, cellCols, particles->c_indices, particles->c_indices_size);
+}
 
 void Pressure::Apply(Ref<Particles> particles)const {
 	size_t particlesAmount = particles->getSize();

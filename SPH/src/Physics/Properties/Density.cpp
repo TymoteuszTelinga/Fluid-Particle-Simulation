@@ -1,5 +1,15 @@
 #include "Density.h"
 
+#include "Cuda/Kernels.cuh"
+
+void Density::CalculateCuda(Ref<Particles> particles) const {
+	int cellRows = (int)(p_spec.Width / p_spec.KernelRange) + 1;
+	int cellCols = (int)(p_spec.Height / p_spec.KernelRange) + 1;
+
+	DensityCuda(particles->c_predictedPositions_x, particles->c_predictedPositions_y, particles->c_densities,
+		particles->c_nearDensities, p_spec.KernelRange, kernel->Spiky2Factor, kernel->Spiky3Factor,
+		particles->getSize(), particles->c_lookup_index, particles->c_lookup_key, cellRows, cellCols, particles->c_indices, particles->c_indices_size);
+}
 
 void Density::Calculate(Ref<Particles> particles)const {
 	size_t particlesAmount = particles->getSize();

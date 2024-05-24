@@ -1,14 +1,31 @@
 #include "NeighbourSearch.h"
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
 void NeighbourSearch::UpdateSpatialLookup(Ref<Particles> particles) {
 	PrepareLookup(particles->getSize());
 	FillSpatialLookup(particles);
 	SortLookUp();
 	FillStartIndices();
+
+	for (int i = 0; i < particles->getSize(); i++) {
+		this->spatialLookupIndex->operator[](i) = this->spatialLookup->operator[](i).particleIndex;
+		this->spatialLookupKey->operator[](i) = this->spatialLookup->operator[](i).cellKey;
+	}
+
+	cudaFree(particles->c_indices);
+	cudaMalloc(&particles->c_indices, this->startIndices->size() * sizeof(int));
+	cudaMemcpy(particles->c_lookup_index, this->spatialLookupIndex->data(), particles->getSize()*sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(particles->c_lookup_key, this->spatialLookupKey->data(), particles->getSize()*sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(particles->c_indices, this->startIndices->data(), this->startIndices->size()*sizeof(int), cudaMemcpyHostToDevice);
+	particles->c_indices_size = this->startIndices->size();
 }
 
 void NeighbourSearch::PrepareLookup(size_t lookupSize) {
 	this->spatialLookup = CreateScope<std::vector<LookupEntry>>(lookupSize, LookupEntry{ 0,0 });
+	this->spatialLookupIndex = CreateScope<std::vector<int>>(lookupSize, 0);
+	this->spatialLookupKey = CreateScope<std::vector<int>>(lookupSize, 0);
 
 	int cellRows = (int)(p_spec.Width / p_spec.KernelRange) + 1;
 	int cellCols = (int)(p_spec.Height / p_spec.KernelRange) + 1;
@@ -30,16 +47,19 @@ Ref<std::vector<size_t>> NeighbourSearch::GetParticleNeighbours(Ref<Particles> p
 	AddNeighbours(neighbours, particles, particleIndex, cellKey + cellRows);
 	AddNeighbours(neighbours, particles, particleIndex, cellKey + cellRows + 1);
 
+
+
 	return neighbours;
 }
 
 
-void NeighbourSearch::AddNeighbours(Ref<std::vector<size_t>> neighbours, Ref<Particles> particles, size_t particleIndex, size_t cellKey) const{
+void NeighbourSearch::AddNeighbours(Ref<std::vector<size_t>> neighbours, Ref<Particles> particles, size_t particleIndex, int cellKey) const{
 	if (cellKey < 0 || cellKey >= startIndices->size()) {
 		return;
 	}
 
 	size_t startIndice = startIndices->operator[](cellKey);
+
 	float sqrRange = p_spec.KernelRange * p_spec.KernelRange;
 	for (size_t i = startIndice; i < spatialLookup->size(); i++) {
 		if (spatialLookup->operator[](i).cellKey != cellKey) {
@@ -47,6 +67,7 @@ void NeighbourSearch::AddNeighbours(Ref<std::vector<size_t>> neighbours, Ref<Par
 		}
 
 		size_t selectedParticleIndex = spatialLookup->operator[](i).particleIndex;
+
 		float distance = particles->calculatePredictedDistance(selectedParticleIndex, particleIndex);
 
 		if (distance*distance <= sqrRange) {

@@ -27,7 +27,13 @@ public:
 	float getNearDensity(size_t index);
 	glm::vec2 getVelocity(size_t index);
 
-private:
+	void sendToCuda();
+	void getFromCuda();
+	void updatePredictedCuda(float deltaTime);
+	void getFromCudaBeforeSpatial();
+		
+
+public:
 	const size_t capacity;
 	size_t size;
 
@@ -45,5 +51,27 @@ private:
 
 	float* densities;
 	float* nearDensities;
+
+public:
+	float* c_positions_x;
+	float* c_positions_y;
+
+	float* c_predictedPositions_x;
+	float* c_predictedPositions_y;
+
+	float* c_velocities_x;
+	float* c_velocities_y;
+
+	float* c_forces_x;
+	float* c_forces_y;
+
+	float* c_densities;
+	float* c_nearDensities;
+
+	int* c_lookup_index;
+	int* c_lookup_key;
+	int* c_indices;
+
+	int c_indices_size;
 };
 

@@ -26,7 +26,7 @@ private:
 	void FillSpatialLookup(Ref<Particles> particles);
 	void SortLookUp();
 	void FillStartIndices();
-	void AddNeighbours(Ref<std::vector<size_t>> neighbours, Ref<Particles> particles, size_t particleIndex, size_t cellKey)const;
+	void AddNeighbours(Ref<std::vector<size_t>> neighbours, Ref<Particles> particles, size_t particleIndex, int cellKey)const;
 
 	size_t PositionToCellKey(glm::vec2 position) const;
 	
@@ -34,6 +34,9 @@ private:
 private:
 	PhysicsSpecification& p_spec;
 	Scope<std::vector<LookupEntry>> spatialLookup;
+	Scope<std::vector<int>> spatialLookupIndex;
+	Scope<std::vector<int>> spatialLookupKey;
 	Scope<std::vector<int>> startIndices;
+
 };
 
