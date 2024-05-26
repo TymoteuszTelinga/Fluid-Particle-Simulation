@@ -124,6 +124,7 @@
     </Link>
     <CudaCompile>
       <CompileOut>$(SolutionDir)bin-int\$(Configuration)-$(Platform)\$(ProjectName)\%(Filename)%(Extension).obj</CompileOut>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,6 +148,7 @@
     </Link>
     <CudaCompile>
       <CompileOut>$(SolutionDir)bin-int\$(Configuration)-$(Platform)\$(ProjectName)\%(Filename)%(Extension).obj</CompileOut>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -183,7 +185,9 @@
     <ClCompile Include="src\Physics\Forces\Viscosity.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Cuda\Kernels.cuh" />
+    <ClInclude Include="src\Cuda\Kernels.h" />
+    <ClInclude Include="src\Cuda\smoothingKernels.cuh" />
+    <ClInclude Include="src\Cuda\utils.cuh" />
     <ClInclude Include="src\Physics\Particles.h" />
     <ClInclude Include="src\Physics\NeighbourSearch.h" />
     <ClInclude Include="src\Physics\Forces\CollisionHandler.h" />
@@ -225,6 +229,8 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\Cuda\Kernels.cu" />
+    <CudaCompile Include="src\Cuda\smoothingKernels.cu" />
+    <CudaCompile Include="src\Cuda\utils.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

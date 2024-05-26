@@ -206,7 +206,9 @@
     <ClInclude Include="src\Physics\Particles.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Cuda\Kernels.cuh" />
+    <ClInclude Include="src\Cuda\Kernels.h" />
+    <ClInclude Include="src\Cuda\smoothingKernels.cuh" />
+    <ClInclude Include="src\Cuda\utils.cuh" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\fragment.glsl" />
@@ -214,5 +216,7 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\Cuda\Kernels.cu" />
+    <CudaCompile Include="src\Cuda\smoothingKernels.cu" />
+    <CudaCompile Include="src\Cuda\utils.cu" />
   </ItemGroup>
 </Project>

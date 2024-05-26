@@ -9,12 +9,12 @@ int main()
 	PhysicsSpecification physSpec;
 	physSpec.Width = 17.1f;
 	physSpec.Height = 9.3f;
-	physSpec.GravityAcceleration = 12.0f;
+	physSpec.GravityAcceleration = 9.81f;
 	physSpec.CollisionDamping = 0.05;
 	physSpec.KernelRange = 0.35;
 	physSpec.RestDensity = 55;
 	physSpec.GasConstant = 500;
-	physSpec.NearPressureCoef = 17.9;
+	physSpec.NearPressureCoef = 18;
 	physSpec.ViscosityStrength = 0.06;
 
 	cudaSetDevice(0);

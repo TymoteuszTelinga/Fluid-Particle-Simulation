@@ -4,15 +4,13 @@
 #include "Renderer/Renderer.h"
 #include "Core/Input.h"
 
-//#define CUDA
-
 Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec)
 	:Application(spec), m_Tint(1.0f), m_Width(spec.Width), m_Height(spec.Height)
 {
 	m_Camera = CreateScope<Camera>(spec.Width, spec.Height);
 	m_Physics = CreateScope<Physics>(p_spec);
 
-	int particles_amount = 600;
+	int particles_amount = 8000;
 	int row_amount = int(sqrt(particles_amount));
 	m_Particles = CreateRef<Particles>(particles_amount);
 
@@ -39,6 +37,7 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 			i++;
 		}
 	}
+	m_Particles->sendToCuda();
 }
 
 void Sandbox::OnEvent(Event& e)
@@ -98,12 +97,10 @@ void Sandbox::OnUpdate(float DeltaTime)
 		return;
 	}
 
-	for (int i = 0; i < 1; i++) {
-	#ifdef CUDA
-		m_Physics->ApplyCuda(m_Particles, DeltaTime/3.0f);
-	#else
-		m_Physics->Apply(m_Particles, DeltaTime / 3.0f);
-	#endif // CUDA
+	for (int i = 0; i < 4; i++) {
+	m_Physics->Apply(m_Particles, DeltaTime/4.0f);
+	//m_Physics->ApplyCuda(m_Particles, 0.003f);
+
 	}
 }
 
@@ -135,14 +132,7 @@ void Sandbox::OnRender()
 	if (ImGui::CollapsingHeader("Physics")) {
 		PhysicsSpecification& spec = this->m_Physics->getSpecification();
 
-		if (ImGui::Button("Reset velocity")) {
-			for (int index = 0; index < m_Particles->getSize(); index++) {
-				m_Particles->setVelocity(index, glm::vec2(0.0f, 0.0f));
-			}
-		}
 		ImGui::SeparatorText("Particle");
-		ImGui::DragFloat("Particle radius", &spec.ParticleRadius, 0.001f, 0.001f, 10.0f);
-		ImGui::DragFloat("Particle mass", &spec.ParticleMass, 0.05f, 0.05f, 1e5);
 
 		ImGui::SeparatorText("Forces");
 		ImGui::DragFloat("Collision Damping", &spec.CollisionDamping, 0.05f, 0.0f, 1.0f);

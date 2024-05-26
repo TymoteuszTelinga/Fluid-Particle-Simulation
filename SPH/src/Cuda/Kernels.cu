@@ -1,118 +1,40 @@
-#include "Kernels.cuh"
+#include "Kernels.h"
+#include "Cuda/smoothingKernels.cuh"
+#include "Cuda/utils.cuh"
 
 #include "stdio.h"
+
+
+__device__ float c_positions_x[PARTICLES_LIMIT];
+__device__ float c_positions_y[PARTICLES_LIMIT];
+__device__ float c_predicted_positions_x[PARTICLES_LIMIT];
+__device__ float c_predicted_positions_y[PARTICLES_LIMIT];
+__device__ float c_velocities_x[PARTICLES_LIMIT];
+__device__ float c_velocities_y[PARTICLES_LIMIT];
+				 
+__device__ float c_densities[PARTICLES_LIMIT];
+__device__ float c_near_densities[PARTICLES_LIMIT];
+				 
+__device__ int c_lookup_indexes[PARTICLES_LIMIT];
+__device__ int c_lookup_keys[PARTICLES_LIMIT];
 
 __constant__ int offset_y[] = { -1, -1, -1, 0, 0, 0, 1, 1, 1};
 __constant__ int offset_x[] = { -1, 0, 1, -1, 0, 1, -1, 0, 1};
 
-__device__ size_t PositionToCellKey(float pos_x, float pos_y, float kernelRange, int cellRows, int cellCols) {
-	int cellX = (int)(pos_x / kernelRange);
-	int cellY = (int)(pos_y / kernelRange);
-
-	if (cellRows - 1 < cellX) {
-		cellX = cellRows - 1;
-	}
-	else if (0 > cellX) {
-		cellX = 0;
-	}
-
-	if (cellCols - 1 < cellY) {
-		cellY = cellRows - 1;
-	}
-	else if (0 > cellY) {
-		cellY = 0;
-	}
-
-	return cellX + cellY * cellRows;
-}
-
-__device__ float calculateDistance(float f_pos_x, float f_pos_y, float s_pos_x, float s_pos_y) {
-	float x_diff = f_pos_x - s_pos_x;
-	float y_diff = f_pos_y - s_pos_y;
-	return sqrt(x_diff * x_diff + y_diff * y_diff);
-}
-
-__device__ float calculatePressure(float density, float gasConstant, float restDensity) {
-	return gasConstant * (density - restDensity);
-}
-
-__device__ float calculateNearPressure(float nearDensity, float nearPressureCoef) {
-	return nearDensity * nearPressureCoef;
-}
-
-__device__ float poly6Kernel(float distance, float radius, float factor) {
-	if (distance <= radius) {
-		float diff = radius * radius - distance * distance;
-		return factor * pow(diff, 3);
-	}
-	return 0;
-}
 
 
-__device__ float spiky2Kernel(float distance, float radius, float factor) {
-	if (distance < radius) {
-		float diff = radius - distance;
-		return factor * pow(diff, 2);
-	}
-	return 0;
-}
-
-__device__ float spiky3Kernel(float distance, float radius, float factor) {
-	if (distance < radius) {
-		float diff = radius - distance;
-		return factor * pow(diff, 3);
-	}
-	return 0;
-}
-
-__device__ float poly6DerivKernel(float distance, float radius, float factor) {
-	if (distance <= radius) {
-		float diff = radius * radius - distance * distance;
-		return factor * distance * diff * diff;
-	}
-	return 0;
-}
-
-__device__ float spiky3DerivKernel(float distance, float radius, float factor) {
-	if (distance <= radius) {
-		float diff = radius - distance;
-		return factor * pow(diff, 2);
-	}
-	return 0;
-}
-
-__device__ float spiky2DerivKernel(float distance, float radius, float factor) {
-	if (distance <= radius) {
-		float diff = radius - distance;
-		return factor * diff;
-	}
-	return 0;
-}
-
-__global__ void GravityKernel(float* forces_y, float acc, size_t size) {
+__global__ void GravityKernel(float acc, size_t size, float deltaTime) {
 	size_t idx = blockDim.x * blockIdx.x + threadIdx.x;
-	if (idx < size) {
-		forces_y[idx] = acc;
+	if (idx >= size) {
+		return;
 	}
+
+	c_velocities_y[idx] += acc * deltaTime;
+	c_predicted_positions_x[idx] = c_positions_x[idx] + c_velocities_x[idx] * deltaTime;
+	c_predicted_positions_y[idx] = c_positions_y[idx] + c_velocities_y[idx] * deltaTime;
 }
 
-__global__ void UpdatePredictedKernel(float* velocities_x, float* velocities_y, float* forces_x, float* forces_y,
-	float* predictedPos_x, float* predictedPos_y, float* pos_x, float* pos_y, float deltaTime, size_t size) {
-	size_t idx = blockDim.x * blockIdx.x + threadIdx.x;
-	if (idx < size) {
-		velocities_x[idx] += forces_x[idx] * deltaTime;
-		velocities_y[idx] += forces_y[idx] * deltaTime;
-		forces_x[idx] = 0.0f;
-		forces_y[idx] = 0.0f;
-		predictedPos_x[idx] = pos_x[idx] + velocities_x[idx] * deltaTime;
-		predictedPos_y[idx] = pos_y[idx] + velocities_y[idx] * deltaTime;
-	}
-}
-
-
-
-__global__ void DensityKernel(float* pred_pos_x, float* pred_pos_y, float* density, float* nearDensity,  float kernelRange,
-		float densityFactor, float nearDensityFactor, size_t size, int* lookupIndex, int* lookupKey, int cellRows, int cellColls, int* indices, size_t indices_size) {
+__global__ void DensityKernel(float kernelRange, float densityFactor, float nearDensityFactor, size_t size, int cellRows, int cellColls, int* indices, size_t indices_size) {
 	size_t idx = blockDim.x * blockIdx.x + threadIdx.x;
 	if (idx >= size) {
 		return;
@@ -121,7 +43,7 @@ __global__ void DensityKernel(float* pred_pos_x, float* pred_pos_y, float* densi
 	float temp_density = 0;
 	float temp_nearDensity = 0;
 	float sqrRange = kernelRange * kernelRange;
-	size_t cellKey = PositionToCellKey(pred_pos_x[idx], pred_pos_y[idx], kernelRange, cellRows, cellColls);
+	size_t cellKey = PositionToCellKey(c_predicted_positions_x, c_predicted_positions_y, idx, kernelRange, cellRows, cellColls);
 	for (int i = 0; i < 9; i++) {
 		int neighbourKey = cellKey + offset_y[i] * cellRows + offset_x[i];
 		if (neighbourKey < 0 || neighbourKey >= indices_size) {
@@ -129,43 +51,49 @@ __global__ void DensityKernel(float* pred_pos_x, float* pred_pos_y, float* densi
 		}
 
 		size_t startIndice = indices[neighbourKey];
+
 		for (size_t lIdx = startIndice; lIdx < size; lIdx++) {
-			if (lookupKey[lIdx] != neighbourKey) {
+			if (c_lookup_keys[lIdx] != neighbourKey) {
 				break;
 			}
-			
-			size_t pIdx = lookupIndex[lIdx];
 
-			float distance = calculateDistance(pred_pos_x[idx], pred_pos_y[idx], pred_pos_x[pIdx], pred_pos_y[pIdx]);
-			if (distance * distance > sqrRange) {
+
+			size_t pIdx = c_lookup_indexes[lIdx];
+
+			float sqrdistance = calculateSquareDistance(c_predicted_positions_x, c_predicted_positions_y, idx, pIdx);
+
+			if (sqrdistance  > sqrRange) {
 				continue;
 			}
+
+			float distance = sqrt(sqrdistance);
 
 			temp_density += spiky2Kernel(distance, kernelRange, densityFactor);
 			temp_nearDensity += spiky3Kernel(distance, kernelRange, nearDensityFactor);
 		}
 	}
-	density[idx] = temp_density;
-	nearDensity[idx] = temp_nearDensity;
+
+	c_densities[idx] = temp_density;
+	c_near_densities[idx] = temp_nearDensity;
 }
 
-__global__ void PressureKernel(float* pred_pos_x, float* pred_pos_y, float* forces_x, float* forces_y,  float* densities, float* nearDensities, float kernelRange, 
-	float spiky2DerivFactor, float spiky3DerivFactor, float gasConstant, float restDensity, float nearPressureCoef, size_t size,
-	int* lookupIndex, int* lookupKey, int cellRows, int cellColls, int* indices, size_t indices_size) {
+__global__ void PressureKernel(float kernelRange, float spiky2DerivFactor, float spiky3DerivFactor, float gasConstant,
+	float restDensity, float nearPressureCoef, size_t size, int cellRows, int cellColls, int* indices, size_t indices_size, float deltaTime) {
 	size_t idx = blockDim.x * blockIdx.x + threadIdx.x;
 	if (idx >= size) {
 		return;
 	}
+
 	float temp_force_x = 0;
 	float temp_force_y = 0;
-	float density = densities[idx];
-	float nearDensity = nearDensities[idx];
+	float density = c_densities[idx];
+	float nearDensity = c_near_densities[idx];
 
 	float pressure = calculatePressure(density, gasConstant, restDensity);
 	float nearPressure = calculateNearPressure(nearDensity, nearPressureCoef);
 
 	float sqrRange = kernelRange * kernelRange;
-	size_t cellKey = PositionToCellKey(pred_pos_x[idx], pred_pos_y[idx], kernelRange, cellRows, cellColls);
+	size_t cellKey = PositionToCellKey(c_predicted_positions_x, c_predicted_positions_y, idx, kernelRange, cellRows, cellColls);
 	for (int i = 0; i < 9; i++) {
 		int neighbourKey = cellKey + offset_y[i] * cellRows + offset_x[i];
 		if (neighbourKey < 0 || neighbourKey >= indices_size) {
@@ -174,20 +102,21 @@ __global__ void PressureKernel(float* pred_pos_x, float* pred_pos_y, float* forc
 
 		size_t startIndice = indices[neighbourKey];
 		for (size_t lIdx = startIndice; lIdx < size; lIdx++) {
-			if (lookupKey[lIdx] != neighbourKey) {
+			if (c_lookup_keys[lIdx] != neighbourKey) {
 				break;
 			}
 
-			size_t pIdx = lookupIndex[lIdx];
+			size_t pIdx = c_lookup_indexes[lIdx];
 
 			if (pIdx == idx) {
 				continue;
 			}
 
-			float distance = calculateDistance(pred_pos_x[idx], pred_pos_y[idx], pred_pos_x[pIdx], pred_pos_y[pIdx]);
-			if (distance * distance > sqrRange) {
+			float sqrDistance = calculateSquareDistance(c_predicted_positions_x, c_predicted_positions_y, idx, pIdx);
+			if (sqrDistance > sqrRange) {
 				continue;
 			}
+			float distance = sqrt(sqrDistance);
 
 			float slope = spiky2DerivKernel(distance, kernelRange, spiky2DerivFactor);
 			float nearSlope = spiky3DerivKernel(distance, kernelRange, spiky3DerivFactor);
@@ -195,8 +124,8 @@ __global__ void PressureKernel(float* pred_pos_x, float* pred_pos_y, float* forc
 				continue;
 			}
 
-			float pDensity = densities[pIdx];
-			float pNearDensity = nearDensities[pIdx];
+			float pDensity = c_densities[pIdx];
+			float pNearDensity = c_near_densities[pIdx];
 
 			float pPressure = calculatePressure(pDensity, gasConstant, restDensity);
 			float pNearPressure = calculateNearPressure(pNearDensity, nearPressureCoef);
@@ -204,8 +133,9 @@ __global__ void PressureKernel(float* pred_pos_x, float* pred_pos_y, float* forc
 			float dir_x = 0.0f;
 			float dir_y = 1.0f;
 			if (distance > 0.0f) {
-				dir_x = (pred_pos_x[pIdx] - pred_pos_x[idx]) / distance;
-				dir_y = (pred_pos_y[pIdx] - pred_pos_y[idx]) / distance;
+				dir_x = (c_predicted_positions_x[pIdx] - c_predicted_positions_x[idx]) / distance;
+				dir_y = (c_predicted_positions_y[pIdx] - c_predicted_positions_y[idx]) / distance;
+
 			}
 
 
@@ -216,17 +146,114 @@ __global__ void PressureKernel(float* pred_pos_x, float* pred_pos_y, float* forc
 			temp_force_y += (pressureCoef + nearPressureCoef) * dir_y;
 		}
 	}
-	forces_x[idx] += temp_force_x;
-	forces_y[idx] += temp_force_y;
+
+	c_velocities_x[idx] += temp_force_x * deltaTime;
+	c_velocities_y[idx] += temp_force_y * deltaTime;
 }
 
-void GravityCuda(float* forces_y, float acc, size_t size) {
+__global__ void ViscosityKernel(float kernelRange, float poly6Factor, float viscosityStrength,
+	size_t size, int cellRows, int cellColls, int* indices, size_t indices_size, float deltaTime) {
+
+	size_t idx = blockDim.x * blockIdx.x + threadIdx.x;
+	if (idx >= size) {
+		return;
+	}
+	float temp_force_x = 0;
+	float temp_force_y = 0;
+
+	float velocity_x = c_velocities_x[idx];
+	float velocity_y = c_velocities_y[idx];
+
+	float sqrRange = kernelRange * kernelRange;
+	size_t cellKey = PositionToCellKey(c_predicted_positions_x, c_predicted_positions_y, idx, kernelRange, cellRows, cellColls);
+	for (int i = 0; i < 9; i++) {
+		int neighbourKey = cellKey + offset_y[i] * cellRows + offset_x[i];
+		if (neighbourKey < 0 || neighbourKey >= indices_size) {
+			continue;
+		}
+
+		size_t startIndice = indices[neighbourKey];
+		for (size_t lIdx = startIndice; lIdx < size; lIdx++) {
+			if (c_lookup_keys[lIdx] != neighbourKey) {
+				break;
+			}
+
+			size_t pIdx = c_lookup_indexes[lIdx];
+
+			if (pIdx == idx) {
+				continue;
+			}
+
+			float sqrDistance = calculateSquareDistance(c_predicted_positions_x, c_predicted_positions_y, idx, pIdx);
+			if (sqrDistance > sqrRange) {
+				continue;
+			}
+
+			float distance = sqrt(sqrDistance);
+
+			float slope = poly6Kernel(distance, kernelRange, poly6Factor);
+
+			float pVelocity_x = c_velocities_x[pIdx];
+			float pVelocity_y = c_velocities_y[pIdx];
+
+			temp_force_x += viscosityStrength * slope * (pVelocity_x - velocity_x);
+			temp_force_y += viscosityStrength * slope * (pVelocity_y - velocity_y);
+		}
+	}
+
+	c_velocities_x[idx] += temp_force_x * deltaTime;
+	c_velocities_y[idx] += temp_force_y * deltaTime;
+}
+
+__global__ void CollisionKernel(size_t size, float deltaTime, float collisionDamping, float min_x, float max_x, float min_y, float max_y) {
+	size_t idx = blockDim.x * blockIdx.x + threadIdx.x;
+	if (idx >= size) {
+		return;
+	}
+	float temp_velocity_x = c_velocities_x[idx];
+	float temp_velocity_y = c_velocities_y[idx];
+	float temp_position_x = c_positions_x[idx] + temp_velocity_x * deltaTime;
+	float temp_position_y = c_positions_y[idx] + temp_velocity_y * deltaTime;
+
+	bool changed = false;
+	if (temp_position_x <= min_x) {
+		temp_position_x = min_x + (min_x - temp_position_x);
+		temp_velocity_x *= -(1 - collisionDamping);
+		changed = true;
+	}
+	else if (temp_position_x >= max_x) {
+		temp_position_x = max_x + (max_x - temp_position_x);
+		temp_velocity_x *= -(1 - collisionDamping);
+		changed = true;
+	}
+
+	if (temp_position_y <= min_y) {
+		temp_position_y = min_y + (min_y - temp_position_y);
+		temp_velocity_y *= -(1 - collisionDamping);
+		changed = true;
+	}
+
+	else if (temp_position_y >= max_y) {
+		temp_position_y = max_y + (max_y - temp_position_y);
+		temp_velocity_y *= -(1 - collisionDamping);
+		changed = true;
+	}
+
+	c_positions_x[idx] = temp_position_x;
+	c_positions_y[idx] = temp_position_y;
+	if (changed) {
+		c_velocities_x[idx] = temp_velocity_x;
+		c_velocities_y[idx] = temp_velocity_y;
+	}
+}
+
+void GravityCuda(float acc, size_t size, float deltaTime) {
 	size_t blocks = size / TPB;
 	if (size % TPB != 0) {
 		blocks += 1;
 	}
 	
-	GravityKernel <<<blocks, TPB >> > (forces_y, acc, size);
+	GravityKernel <<<blocks, TPB >> > (acc, size, deltaTime);
 
 	cudaError_t cudaStatus = cudaGetLastError();
 	if (cudaStatus != cudaSuccess) {
@@ -240,38 +267,15 @@ void GravityCuda(float* forces_y, float acc, size_t size) {
 }
 
 
-void UpdatePredictedFromCuda(float* velocities_x, float* velocities_y, float* forces_x, float* forces_y,
-	float* predictedPos_x, float* predictedPos_y, float* pos_x, float* pos_y, float deltaTime, size_t size) {
-	size_t blocks = size / TPB;
-	if (size % TPB != 0) {
-		blocks += 1;
-	}
-
-	UpdatePredictedKernel<<<blocks, TPB>>> (velocities_x, velocities_y, forces_x, forces_y, predictedPos_x,
-		predictedPos_y, pos_x, pos_y, deltaTime, size);
-
-	cudaError_t cudaStatus = cudaGetLastError();
-	if (cudaStatus != cudaSuccess) {
-		fprintf(stderr, "update launch failed: %s\n", cudaGetErrorString(cudaStatus));
-	}
-
-	cudaStatus = cudaDeviceSynchronize();
-	if (cudaStatus != cudaSuccess) {
-		fprintf(stderr, "cudaDeviceSynchronize returned error code %d after launching update!\n", cudaStatus);
-	}
-}
-
-
-void DensityCuda(float* pred_pos_x, float* pred_pos_y, float* density, float* nearDensity, float kernelRange,
-	float densityFactor, float nearDensityFactor, size_t size, int* lookupIndex, int* lookupKey, int cellRows, int cellColls, int* indices, size_t indices_size) {
+void DensityCuda(float kernelRange, float densityFactor, float nearDensityFactor, 
+	size_t size, int cellRows, int cellColls, int* indices, size_t indices_size) {
 
 	size_t blocks = size / TPB;
 	if (size % TPB != 0) {
 		blocks += 1;
 	}
 
-	DensityKernel << <blocks, TPB >> > (pred_pos_x, pred_pos_y, density, nearDensity, kernelRange, densityFactor,
-		nearDensityFactor, size, lookupIndex, lookupKey, cellRows, cellColls, indices, indices_size);
+	DensityKernel << <blocks, TPB >> > (kernelRange, densityFactor, nearDensityFactor, size, cellRows, cellColls, indices, indices_size);
 
 	cudaError_t cudaStatus = cudaGetLastError();
 	if (cudaStatus != cudaSuccess) {
@@ -284,18 +288,14 @@ void DensityCuda(float* pred_pos_x, float* pred_pos_y, float* density, float* ne
 	}
 }
 
-void PressureCuda(float* pred_pos_x, float* pred_pos_y, float* forces_x, float* forces_y, float* densities, float* nearDensities, float kernelRange,
-	float spiky2DerivFactor, float spiky3DerivFactor, float gasConstant, float restDensity, float nearPressureCoef, size_t size,
-	int* lookupIndex, int* lookupKey, int cellRows, int cellColls, int* indices, size_t indices_size) {
-
+void PressureCuda(float kernelRange, float spiky2DerivFactor, float spiky3DerivFactor, float gasConstant,
+	float restDensity, float nearPressureCoef, size_t size, int cellRows, int cellColls, int* indices, size_t indices_size, float deltaTime) {
 	size_t blocks = size / TPB;
 	if (size % TPB != 0) {
 		blocks += 1;
 	}
 
-	PressureKernel << <blocks, TPB >> > (pred_pos_x, pred_pos_y, forces_x, forces_y, densities, nearDensities, kernelRange,
-		spiky2DerivFactor, spiky3DerivFactor, gasConstant, restDensity, nearPressureCoef, size,
-		lookupIndex, lookupKey, cellRows, cellColls, indices, indices_size);
+	PressureKernel <<<blocks, TPB >> > (kernelRange, spiky2DerivFactor, spiky3DerivFactor, gasConstant, restDensity, nearPressureCoef, size, cellRows, cellColls, indices, indices_size, deltaTime);
 
 	cudaError_t cudaStatus = cudaGetLastError();
 	if (cudaStatus != cudaSuccess) {
@@ -305,6 +305,45 @@ void PressureCuda(float* pred_pos_x, float* pred_pos_y, float* forces_x, float* 
 	cudaStatus = cudaDeviceSynchronize();
 	if (cudaStatus != cudaSuccess) {
 		fprintf(stderr, "cudaDeviceSynchronize returned error code %d after launching pressure!\n", cudaStatus);
+	}
+}
+
+void ViscosityCuda(float kernelRange, float poly6Factor, float viscosityStrength, size_t size, int cellRows, int cellColls, int* indices, size_t indices_size, float deltaTime) {
+
+	size_t blocks = size / TPB;
+	if (size % TPB != 0) {
+		blocks += 1;
+	}
+
+	ViscosityKernel <<<blocks, TPB >>> (kernelRange, poly6Factor, viscosityStrength, size, cellRows, cellColls, indices, indices_size, deltaTime);
+
+	cudaError_t cudaStatus = cudaGetLastError();
+	if (cudaStatus != cudaSuccess) {
+		fprintf(stderr, "viscosity launch failed: %s\n", cudaGetErrorString(cudaStatus));
+	}
+
+	cudaStatus = cudaDeviceSynchronize();
+	if (cudaStatus != cudaSuccess) {
+		fprintf(stderr, "cudaDeviceSynchronize returned error code %d after launching viscosity!\n", cudaStatus);
+	}
+}
+
+void UpdateAndCollisionCuda(size_t size, float deltaTime, float collisionDamping, float min_x, float max_x, float min_y, float max_y) {
+	size_t blocks = size / TPB;
+	if (size % TPB != 0) {
+		blocks += 1;
+	}
+
+	CollisionKernel<< <blocks, TPB >> > (size, deltaTime, collisionDamping, min_x, max_x, min_y, max_y);
+
+	cudaError_t cudaStatus = cudaGetLastError();
+	if (cudaStatus != cudaSuccess) {
+		fprintf(stderr, "Collision launch failed: %s\n", cudaGetErrorString(cudaStatus));
+	}
+
+	cudaStatus = cudaDeviceSynchronize();
+	if (cudaStatus != cudaSuccess) {
+		fprintf(stderr, "cudaDeviceSynchronize returned error code %d after launching collision!\n", cudaStatus);
 	}
 }
 

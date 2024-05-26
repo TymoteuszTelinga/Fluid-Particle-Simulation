@@ -26,11 +26,9 @@ public:
 		l_Pressure = CreateScope<Pressure>(spec, l_NeighbourSearch, m_Kernel);
 		l_Viscosity = CreateScope<Viscosity>(spec, l_NeighbourSearch, m_Kernel);
 		l_CollisionHandler = CreateScope<CollisionHandler>(spec);
-		
 	}
 
 	void Apply(Ref<Particles> particles, const float deltaTime) const;
-	void ApplyCuda(Ref<Particles> particles, const float deltaTime) const;
 
 	PhysicsSpecification& getSpecification() {
 		return p_spec;

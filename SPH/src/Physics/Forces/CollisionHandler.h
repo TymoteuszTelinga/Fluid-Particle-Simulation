@@ -11,14 +11,8 @@ class CollisionHandler
 {
 public:
 	CollisionHandler(PhysicsSpecification& spec) : p_spec(spec) {}
-	void Resolve(Ref<Particles> particles) const;
+	void Resolve(Ref<Particles> particles, float deltaTime) const;
 
-private:
-	Ref<std::thread> RunSubResolve(Ref<Particles> particles, size_t firstIndex, size_t amount) const;
-	void SubResolve(Ref<Particles> particles, size_t firstIndex, size_t amount)const;
-	void ResolveCollision(Ref<Particles> particle, size_t index) const;
-
-private:
 private:
 	PhysicsSpecification& p_spec;
 };

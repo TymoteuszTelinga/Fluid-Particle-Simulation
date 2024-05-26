@@ -3,6 +3,9 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+#include "Cuda/Kernels.h"
+#include "iostream"
+
 void NeighbourSearch::UpdateSpatialLookup(Ref<Particles> particles) {
 	PrepareLookup(particles->getSize());
 	FillSpatialLookup(particles);
@@ -14,11 +17,11 @@ void NeighbourSearch::UpdateSpatialLookup(Ref<Particles> particles) {
 		this->spatialLookupKey->operator[](i) = this->spatialLookup->operator[](i).cellKey;
 	}
 
-	cudaFree(particles->c_indices);
-	cudaMalloc(&particles->c_indices, this->startIndices->size() * sizeof(int));
-	cudaMemcpy(particles->c_lookup_index, this->spatialLookupIndex->data(), particles->getSize()*sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(particles->c_lookup_key, this->spatialLookupKey->data(), particles->getSize()*sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(particles->c_indices, this->startIndices->data(), this->startIndices->size()*sizeof(int), cudaMemcpyHostToDevice);
+	CUDA_CALL(cudaFree(particles->c_indices_addr));
+	CUDA_CALL(cudaMalloc(&particles->c_indices_addr, this->startIndices->size() * sizeof(int)));
+	CUDA_CALL(cudaMemcpy(particles->c_lookup_indexes_addr, this->spatialLookupIndex->data(), particles->getSize()*sizeof(int), cudaMemcpyHostToDevice));
+	CUDA_CALL(cudaMemcpy(particles->c_lookup_keys_addr, this->spatialLookupKey->data(), particles->getSize()*sizeof(int), cudaMemcpyHostToDevice));
+	CUDA_CALL(cudaMemcpy(particles->c_indices_addr, this->startIndices->data(), this->startIndices->size()*sizeof(int), cudaMemcpyHostToDevice));
 	particles->c_indices_size = this->startIndices->size();
 }
 
@@ -47,8 +50,6 @@ Ref<std::vector<size_t>> NeighbourSearch::GetParticleNeighbours(Ref<Particles> p
 	AddNeighbours(neighbours, particles, particleIndex, cellKey + cellRows);
 	AddNeighbours(neighbours, particles, particleIndex, cellKey + cellRows + 1);
 
-
-
 	return neighbours;
 }
 
@@ -75,8 +76,6 @@ void NeighbourSearch::AddNeighbours(Ref<std::vector<size_t>> neighbours, Ref<Par
 		}
 	}
 }
-
-
 
 void NeighbourSearch::FillSpatialLookup(Ref<Particles> particles) {
 	for (size_t i = 0; i < particles->getSize(); i++) {

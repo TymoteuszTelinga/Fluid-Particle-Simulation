@@ -14,12 +14,7 @@ class Gravity
 {
 public:
 	Gravity(PhysicsSpecification& spec) : p_spec(spec) {};
-	void Apply(Ref<Particles> particles) const;
-	void ApplyCuda(Ref<Particles> particles) const;
-
-private:
-	Ref<std::thread> RunSubApply(Ref<Particles> particles, size_t firstIndex, size_t amount)const;
-	void SubApply(Ref<Particles> particles, size_t firstIndex, size_t amount)const;
+	void Apply(Ref<Particles> particles, float deltaTime) const;
 
 private:
 	PhysicsSpecification& p_spec;
