@@ -19,7 +19,7 @@
 class Sandbox : public Application
 {
 public:
-	Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec);
+	Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec, std::vector<obstacle>& obstacles, flow_area in, flow_area out);
 	~Sandbox() {};
 
 	virtual void OnEvent(Event& e) override;

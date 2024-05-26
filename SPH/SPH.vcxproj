@@ -152,6 +152,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Physics\Flow.cpp" />
     <ClCompile Include="src\Physics\Particles.cpp" />
     <ClCompile Include="src\Physics\NeighbourSearch.cpp" />
     <ClCompile Include="src\Physics\Forces\CollisionHandler.cpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="src\Physics\Forces\Viscosity.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Physics\Flow.h" />
     <ClInclude Include="src\Cuda\Kernels.h" />
     <ClInclude Include="src\Cuda\smoothingKernels.cuh" />
     <ClInclude Include="src\Cuda\utils.cuh" />

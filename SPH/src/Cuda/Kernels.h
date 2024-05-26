@@ -9,6 +9,11 @@ if ( cudaSuccess != result )            \
     std::cerr << "CUDA error " << result << " in " << __FILE__ << ":" << __LINE__ << ": " << cudaGetErrorString( result ) << " (" << #call << ")" << std::endl;  \
 }
 
+typedef struct
+{
+	float x_pos, y_pos, width, height;
+} obstacle;
+
 const size_t TPB = 512;
 const size_t PARTICLES_LIMIT = 20000;
 
@@ -33,5 +38,5 @@ void PressureCuda(float kernelRange, float spiky2DerivFactor, float spiky3DerivF
 void ViscosityCuda(float kernelRange, float poly6Factor, float viscosityStrength, size_t size, int cellRows,
 	int cellColls, int* indices, size_t indices_size, float deltaTime);
 
-void UpdateAndCollisionCuda(size_t size, float deltaTime, float collisionDamping, float min_x, float max_x, 
-	float min_y, float max_y);
+void UpdateAndCollisionCuda(size_t size, float deltaTime, float collisionDamping, float particlesRadius, float min_x, float max_x, 
+	float min_y, float max_y, obstacle* obstacles, size_t obstacles_size);

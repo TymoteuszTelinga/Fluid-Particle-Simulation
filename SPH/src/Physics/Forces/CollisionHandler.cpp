@@ -1,6 +1,5 @@
 #include "CollisionHandler.h"
 
-#include "Cuda/Kernels.h"
 
 void CollisionHandler::Resolve(Ref<Particles> particles, float deltaTime) const {
 	float halfWidth = p_spec.Width / 2.0f;
@@ -11,7 +10,7 @@ void CollisionHandler::Resolve(Ref<Particles> particles, float deltaTime) const 
 	float min_y = -halfHeight + p_spec.ParticleRadius;
 	float max_y = halfHeight - p_spec.ParticleRadius;
 
-	UpdateAndCollisionCuda(particles->getSize(), deltaTime, p_spec.CollisionDamping,
-		min_x, max_x, min_y, max_y);
+	UpdateAndCollisionCuda(particles->getSize(), deltaTime, -(1.0f-p_spec.CollisionDamping), p_spec.ParticleRadius,
+		min_x, max_x, min_y, max_y, c_obstacles_addr, obstacles_size);
 
 }

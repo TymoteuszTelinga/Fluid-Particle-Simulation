@@ -102,6 +102,9 @@
     <ClCompile Include="src\Physics\Particles.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="src\Physics\Flow.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vendor\imgui\imconfig.h">
@@ -209,6 +212,9 @@
     <ClInclude Include="src\Cuda\Kernels.h" />
     <ClInclude Include="src\Cuda\smoothingKernels.cuh" />
     <ClInclude Include="src\Cuda\utils.cuh" />
+    <ClInclude Include="src\Physics\Flow.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\fragment.glsl" />

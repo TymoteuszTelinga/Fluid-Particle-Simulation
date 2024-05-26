@@ -4,15 +4,15 @@
 #include "Renderer/Renderer.h"
 #include "Core/Input.h"
 
-Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec)
+Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec, std::vector<obstacle>& obstacles, flow_area in, flow_area out)
 	:Application(spec), m_Tint(1.0f), m_Width(spec.Width), m_Height(spec.Height)
 {
 	m_Camera = CreateScope<Camera>(spec.Width, spec.Height);
-	m_Physics = CreateScope<Physics>(p_spec);
+	m_Physics = CreateScope<Physics>(p_spec, obstacles, in, out);
 
-	int particles_amount = 8000;
+	int particles_amount = 0;
 	int row_amount = int(sqrt(particles_amount));
-	m_Particles = CreateRef<Particles>(particles_amount);
+	m_Particles = CreateRef<Particles>(PARTICLES_LIMIT);
 
 	glm::vec2 s(2, 7);
 	int numX = ceil(sqrt(s.x / s.y * particles_amount + (s.x - s.y) * (s.x - s.y) / (4 * s.y * s.y)) - (s.x - s.y) / (2 * s.y));
@@ -32,12 +32,12 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 			float ty = numY <= 1 ? 0.5f : y / (numY - 1.0f);
 
 			glm::vec2 pos((tx - 0.5f) * s.x, (ty - 0.5f) * s.y);
+
 			pos += spawnCentre;
 			m_Particles->addParticle(pos.x, pos.y);
 			i++;
 		}
 	}
-	m_Particles->sendToCuda();
 }
 
 void Sandbox::OnEvent(Event& e)
@@ -98,9 +98,7 @@ void Sandbox::OnUpdate(float DeltaTime)
 	}
 
 	for (int i = 0; i < 4; i++) {
-	m_Physics->Apply(m_Particles, DeltaTime/4.0f);
-	//m_Physics->ApplyCuda(m_Particles, 0.003f);
-
+		m_Physics->Apply(m_Particles, DeltaTime / 4.0f, 10);
 	}
 }
 
