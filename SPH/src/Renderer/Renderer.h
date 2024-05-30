@@ -2,9 +2,13 @@
 
 #include "Camera.h"
 #include "Shader.h"
-#include "VertexArray.h"
-#include "IndexBuffer.h"
+#include <vector>
 
+struct Obstacle
+{
+	glm::vec2 Min = glm::vec2(0);
+	glm::vec2 Max = glm::vec2(0);
+};
 
 class Renderer
 {
@@ -15,6 +19,8 @@ public:
 	static void SetColor(float r, float g, float b, float a = 1.0f);
 	static void Resize(int width, int height);
 	static void Clear();
+	static void SetObstacles(const std::vector<Obstacle>& obstacles);
+	static void SetParticleSize(float particleSize);
 
 	static void BeginScene(const Camera& camera);
 	static void DrawQuad(const glm::vec2& position);
@@ -37,5 +43,6 @@ private:
 	static void StartBatch();
 	static void NextBatch();
 	static void Flush();
+	static void DrawBackground();
 
 };

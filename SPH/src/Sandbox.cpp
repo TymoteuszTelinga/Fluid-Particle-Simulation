@@ -19,6 +19,22 @@ Sandbox::Sandbox(const ApplicationSpecification& spec)
 		y -= halfHeight;
 		m_Positions[i] = glm::vec2(x , y);
 	}
+
+	std::vector<Obstacle> obstacles;
+	Obstacle obj;
+	obj.Min = glm::vec2(-halfWidth, -(halfHeight+20));
+	obj.Max = glm::vec2(halfWidth, -halfHeight);
+	obstacles.push_back(obj);
+
+	obj.Min = glm::vec2(-(halfWidth+20), -(halfHeight + 20));
+	obj.Max = glm::vec2(-halfWidth, halfHeight);
+	obstacles.push_back(obj);
+
+	obj.Min = glm::vec2(halfWidth, -(halfHeight + 20));
+	obj.Max = glm::vec2(halfWidth + 20, halfHeight);
+	obstacles.push_back(obj);
+
+	Renderer::SetObstacles(obstacles);
 }
 
 void Sandbox::OnEvent(Event& e)
