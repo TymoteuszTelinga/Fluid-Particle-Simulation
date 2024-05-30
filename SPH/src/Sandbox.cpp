@@ -8,10 +8,11 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 	:Application(spec), m_Tint(1.0f), m_Width(spec.Width), m_Height(spec.Height)
 {
 	m_Camera = CreateScope<Camera>(spec.Width, spec.Height);
+	m_Camera->SetPosition(glm::vec3(spec.Width / 2, spec.Height / 2, 0));
 
 	l_Physics = CreateScope<Physics>(p_spec);
 
-	int particles_amount = 1500;
+	int particles_amount = 500;
 	int row_amount = int(sqrt(particles_amount));
 	m_Particles.reserve(particles_amount);
 	for (size_t i = 0; i < m_Particles.capacity(); i++) {
@@ -25,16 +26,16 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 
 	std::vector<Obstacle> obstacles;
 	Obstacle obj;
-	obj.Min = glm::vec2(-halfWidth, -(halfHeight+20));
-	obj.Max = glm::vec2(halfWidth, -halfHeight);
+	obj.Min = glm::vec2(0, -20);
+	obj.Max = glm::vec2(spec.Width, 0);
 	obstacles.push_back(obj);
 
-	obj.Min = glm::vec2(-(halfWidth+20), -(halfHeight + 20));
-	obj.Max = glm::vec2(-halfWidth, halfHeight);
+	obj.Min = glm::vec2(-20, -20);
+	obj.Max = glm::vec2(0, spec.Height);
 	obstacles.push_back(obj);
 
-	obj.Min = glm::vec2(halfWidth, -(halfHeight + 20));
-	obj.Max = glm::vec2(halfWidth + 20, halfHeight);
+	obj.Min = glm::vec2(spec.Width, -20);
+	obj.Max = glm::vec2(spec.Width + 20, spec.Height);
 	obstacles.push_back(obj);
 
 	Renderer::SetObstacles(obstacles);
