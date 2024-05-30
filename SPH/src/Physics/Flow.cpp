@@ -7,7 +7,7 @@ void Flow::in(size_t amount, Ref<Particles> particles) const{
 			return;
 		}
 		float x_pos = random(in_area.x_pos, in_area.x_pos + in_area.width);
-		float y_pos = random(in_area.y_pos, in_area.y_pos + in_area.heigth);
+		float y_pos = random(in_area.y_pos, in_area.y_pos + in_area.height);
 
 		particles->addParticle(x_pos, y_pos);
 	}
@@ -17,7 +17,7 @@ void Flow::out(Ref<Particles> particles) const {
 	for (int index = particles->getSize(); index >= 0; index--) {
 		glm::vec2 pos = particles->getPosition(index);
 		if (pos.x > out_area.x_pos && pos.x < out_area.x_pos + out_area.width &&
-			pos.y > out_area.y_pos && pos.y < out_area.y_pos + out_area.heigth) {
+			pos.y > out_area.y_pos && pos.y < out_area.y_pos + out_area.height) {
 			particles->remove(index);
 		}
 	}

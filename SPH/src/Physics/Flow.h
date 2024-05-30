@@ -5,13 +5,6 @@
 #include "Core\Base.h"
 #include "Physics/Particles.h"
 
-struct flow_area {
-	float x_pos;
-	float y_pos;
-	float width;
-	float heigth;
-};
-
 class Flow
 {
 

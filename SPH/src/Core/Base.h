@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include "ComonTypes.h"
 
 template<typename T>
 using Scope = std::unique_ptr<T>;
