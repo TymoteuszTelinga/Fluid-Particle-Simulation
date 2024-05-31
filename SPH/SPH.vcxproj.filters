@@ -504,6 +504,7 @@
   <ItemGroup>
     <None Include="src\Shaders\fragment.glsl" />
     <None Include="src\Shaders\vertex.glsl" />
+    <None Include="src\Shaders\fragmentBG.glsl" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\Cuda\Kernels.cu" />

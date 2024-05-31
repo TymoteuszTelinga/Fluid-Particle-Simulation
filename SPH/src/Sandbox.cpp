@@ -19,11 +19,7 @@ Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_s
 	int row_amount = int(sqrt(particles_amount));
 	m_Particles = CreateRef<Particles>(PARTICLES_LIMIT);
 
-	glm::vec2 s(2, 7);
 	int numX = ceil(sqrt(s.x / s.y * particles_amount + (s.x - s.y) * (s.x - s.y) / (4 * s.y * s.y)) - (s.x - s.y) / (2 * s.y));
-	int numY = ceil(particles_amount / (float)numX);
-	glm::vec2 spawnCentre(3.35, 0.51);
-
 	int i = 0;
 	for (int y = 0; y < numY; y++)
 	{
