@@ -10,6 +10,19 @@ static void serializeObstacle(YAML::Emitter& out, const obstacle& o)
 	out << YAML::EndMap;
 };
 
+static void LoadSpecification(const YAML::Node& node, PhysicsSpecification& spec)
+{
+	spec.Width = node["Width"].as<float>();
+	spec.Height = node["Height"].as<float>();
+	spec.GravityAcceleration = node["Gravity"].as<float>();
+	spec.CollisionDamping = node["CollisionDamping"].as<float>();
+	spec.KernelRange = node["KernelRange"].as<float>();
+	spec.RestDensity = node["RestDensity"].as<float>();
+	spec.GasConstant = node["GasConstant"].as<float>();
+	spec.NearPressureCoef = node["NearPressureCoef"].as<float>();
+	spec.ViscosityStrength = node["Viscosity"].as<float>();
+}
+
 bool SimulationLoader::Load(const std::string& filepath)
 {
 	m_Obstacles.clear();
@@ -47,6 +60,10 @@ bool SimulationLoader::Load(const std::string& filepath)
 		m_InArea.width = max[0].as<float>() - m_InArea.x_pos;
 		m_InArea.height = max[1].as<float>() - m_InArea.y_pos;
 	}
+	else
+	{
+		return false;
+	}
 
 	auto out = data["OutArea"];
 	if (out)
@@ -58,6 +75,16 @@ bool SimulationLoader::Load(const std::string& filepath)
 		const YAML::Node& max = out["Max"];
 		m_OutArea.width = max[0].as<float>() - m_OutArea.x_pos;
 		m_OutArea.height = max[1].as<float>() - m_OutArea.y_pos;
+	}
+	else
+	{
+		return false;
+	}
+
+	auto physics = data["Physics"];
+	if (physics)
+	{
+		LoadSpecification(physics, m_PhysicsSpec);
 	}
 
 	return true;

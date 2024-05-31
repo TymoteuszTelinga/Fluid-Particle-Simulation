@@ -24,6 +24,29 @@ private:
 	unsigned int m_Width, m_Height;
 };
 
+class WindowMovedEvent : public Event
+{
+public:
+	WindowMovedEvent(unsigned int x, unsigned int y)
+		: m_PositionX(x), m_PositionY(y) {}
+
+	unsigned int GetPositionX() const { return m_PositionX; }
+	unsigned int GetPositionY() const { return m_PositionY; }
+
+	std::string ToString() const override
+	{
+		std::stringstream ss;
+		ss << "WindowMovedEvent: " << m_PositionX << ", " << m_PositionY;
+		return ss.str();
+	}
+
+	EVENT_CLASS_TYPE(WindowMoved)
+
+private:
+	unsigned int m_PositionX, m_PositionY;
+};
+
+
 class ScrollEvent : public Event
 {
 public:

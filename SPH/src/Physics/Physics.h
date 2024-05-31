@@ -21,12 +21,12 @@ class Physics
 public:
 	Physics(PhysicsSpecification& spec, std::vector<obstacle>& obstacles, flow_area in, flow_area out): p_spec(spec) {
 		m_Kernel = CreateRef<Kernel>();
-		l_NeighbourSearch = CreateRef<NeighbourSearch>(spec);
-		l_Gravity = CreateScope<Gravity>(spec);
-		l_Density = CreateScope<Density>(spec, l_NeighbourSearch, m_Kernel);
-		l_Pressure = CreateScope<Pressure>(spec, l_NeighbourSearch, m_Kernel);
-		l_Viscosity = CreateScope<Viscosity>(spec, l_NeighbourSearch, m_Kernel);
-		l_CollisionHandler = CreateScope<CollisionHandler>(spec, obstacles);
+		l_NeighbourSearch = CreateRef<NeighbourSearch>(p_spec);
+		l_Gravity = CreateScope<Gravity>(p_spec);
+		l_Density = CreateScope<Density>(p_spec, l_NeighbourSearch, m_Kernel);
+		l_Pressure = CreateScope<Pressure>(p_spec, l_NeighbourSearch, m_Kernel);
+		l_Viscosity = CreateScope<Viscosity>(p_spec, l_NeighbourSearch, m_Kernel);
+		l_CollisionHandler = CreateScope<CollisionHandler>(p_spec, obstacles);
 		l_Flow = CreateScope<Flow>(in, out);
 	}
 
@@ -37,7 +37,7 @@ public:
 	}
 
 private:
-	PhysicsSpecification& p_spec;
+	PhysicsSpecification p_spec;
 	Scope<Gravity> l_Gravity;
 	Scope<Pressure> l_Pressure;
 	Scope<Density> l_Density;

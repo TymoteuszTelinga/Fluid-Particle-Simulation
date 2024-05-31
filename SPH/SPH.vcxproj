@@ -152,6 +152,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\FileDialog.cpp" />
     <ClCompile Include="src\Core\SimulationLoader.cpp" />
     <ClCompile Include="src\Physics\Flow.cpp" />
     <ClCompile Include="src\Physics\Particles.cpp" />
@@ -219,6 +220,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\ComonTypes.h" />
+    <ClInclude Include="src\Core\FileDialog.h" />
     <ClInclude Include="src\Core\SimulationLoader.h" />
     <ClInclude Include="src\Physics\Flow.h" />
     <ClInclude Include="src\Cuda\Kernels.h" />

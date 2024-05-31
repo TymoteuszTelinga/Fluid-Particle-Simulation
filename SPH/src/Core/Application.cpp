@@ -94,10 +94,18 @@ void Application::Run()
 	}
 }
 
+void Application::ResetDelta()
+{
+	float time = glfwGetTime();
+	m_DeltaTime = time - m_LastTime;
+	m_LastTime = time;
+}
+
 void Application::OnEventApp(Event& e)
 {
 	EventDispatcher Dispacher(e);
 	Dispacher.Dispatch<WindowResizeEvent>(BIND_EVENT(ResizeVieport));
+	Dispacher.Dispatch<WindowMovedEvent>(BIND_EVENT(WindowMoved));
 
 	OnEvent(e);
 
@@ -114,5 +122,11 @@ bool Application::ResizeVieport(WindowResizeEvent& e)
 	m_Minimized = false;
 	Renderer::Resize(e.GetWidth(), e.GetHeight());
 
+	return false;
+}
+
+bool Application::WindowMoved(WindowMovedEvent& e)
+{
+	ResetDelta();
 	return false;
 }

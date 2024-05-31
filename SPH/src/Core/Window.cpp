@@ -45,8 +45,15 @@ bool Window::Init()
 			data.callback(event);
 		});
 
+	glfwSetWindowPosCallback(m_Window, [](GLFWwindow* window, int xpos, int ypos)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowMovedEvent event(xpos, ypos);
+			data.callback(event);
+		});
+
 	//glfwSetWindowTitle();
-	glfwSwapInterval(0);
+	//glfwSwapInterval(0);
 
 	return true;
 }

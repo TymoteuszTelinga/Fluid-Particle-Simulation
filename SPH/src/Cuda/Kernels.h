@@ -11,7 +11,7 @@ if ( cudaSuccess != result )            \
 }
 
 const size_t TPB = 512;
-const size_t PARTICLES_LIMIT = 500;
+const size_t PARTICLES_LIMIT = 2000;
 
 extern __device__ float c_positions_x[PARTICLES_LIMIT];
 extern __device__ float c_positions_y[PARTICLES_LIMIT];

@@ -29,9 +29,13 @@ public:
 	virtual void OnUpdate(float DeltaTime) {};
 	virtual void OnRender() {};
 
+protected:
+	void ResetDelta();
+
 private:
 	void OnEventApp(Event& e);
 	bool ResizeVieport(WindowResizeEvent& e);
+	bool WindowMoved(WindowMovedEvent& e);
 	//void Init();
 	//void Shutdown();
 

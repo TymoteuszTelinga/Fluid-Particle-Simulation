@@ -29,15 +29,16 @@ public:
 private:
 	bool Resize(WindowResizeEvent& e);
 	bool Scroll(ScrollEvent& e);
+	void LoadData(const std::string& filepath);
 
 private:
-	Scope<Physics> m_Physics;
+	Scope<Physics> m_Physics = nullptr;
 	//Camera
 	Scope<Camera> m_Camera;
 	float m_CameraSpeed = 100.0f;
 
 
-	Ref<Particles> m_Particles;
+	Ref<Particles> m_Particles = nullptr;
 	glm::vec3 m_Tint;
   
   //Debug info

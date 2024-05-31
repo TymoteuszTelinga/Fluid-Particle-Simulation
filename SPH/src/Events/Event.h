@@ -6,6 +6,7 @@ enum class EventType
 {
     None = 0,
     WindowResize,
+    WindowMoved,
     Scroll
 };
 
