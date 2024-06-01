@@ -1,9 +1,6 @@
 #include "Pressure.h"
 
-#include <thread>
-
-#include "Cuda/Kernels.h"
-#include "Core/Base.h"
+#include "Physics/Cuda/Kernels.h"
 
 
 void Pressure::Apply(Ref<Particles> particles, float deltaTime) const {

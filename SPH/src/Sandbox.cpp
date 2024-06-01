@@ -144,7 +144,7 @@ void Sandbox::OnRender()
 	}
 	if (ImGui::CollapsingHeader("Physics") && m_Physics) 
 	{
-		PhysicsSpecification& spec = m_Physics->getSpecification();
+		physicsSpecification& spec = m_Physics->getSpecification();
 
 		ImGui::SeparatorText("Particle");
 		uint32_t particelLimit = m_Particles->getCapacity();
@@ -196,7 +196,7 @@ void Sandbox::LoadData(const std::string& filepath)
 	flow_area in = Loader.GetInArea();
 	flow_area out = Loader.GetOutArea();
 
-	PhysicsSpecification spec = Loader.GetSpecification();
+	physicsSpecification spec = Loader.GetSpecification();
 
 	m_Physics = CreateScope<Physics>(spec, obstacles, in, out);
 	m_Particles = CreateRef<Particles>(2000,PARTICLES_LIMIT);

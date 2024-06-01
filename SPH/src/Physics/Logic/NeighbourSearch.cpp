@@ -1,9 +1,8 @@
 #include "NeighbourSearch.h"
 
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
+#include <algorithm>
 
-#include "Cuda/Kernels.h"
+#include "Physics/Cuda/Kernels.h"
 #include "iostream"
 
 void NeighbourSearch::UpdateSpatialLookup(Ref<Particles> particles) {

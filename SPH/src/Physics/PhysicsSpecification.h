@@ -1,9 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#include "Physics/Kernel.h"
-
-struct PhysicsSpecification {
+struct physicsSpecification {
 	float Width = 8.0f;
 	float Height = 8.0f;
 	const float MetersToPixel = 100.0f; // 100 px = 1m

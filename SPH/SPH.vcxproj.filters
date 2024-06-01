@@ -81,28 +81,28 @@
     <ClCompile Include="src\Physics\Forces\Gravity.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\Kernel.cpp">
+    <ClCompile Include="src\Physics\Logic\KernelFactors.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\Properties\Density.cpp">
+    <ClCompile Include="src\Physics\Forces\Density.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="src\Physics\Forces\Pressure.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\Forces\CollisionHandler.cpp">
+    <ClCompile Include="src\Physics\Logic\CollisionHandler.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\NeighbourSearch.cpp">
+    <ClCompile Include="src\Physics\Logic\NeighbourSearch.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="src\Physics\Forces\Viscosity.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\Particles.cpp">
+    <ClCompile Include="src\Physics\Entities\Particles.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\Flow.cpp">
+    <ClCompile Include="src\Physics\Logic\Flow.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\SimulationLoader.cpp">
@@ -284,34 +284,34 @@
     <ClInclude Include="src\Physics\Forces\Gravity.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics\Kernel.h">
+    <ClInclude Include="src\Physics\Logic\KernelFactors.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics\Properties\Density.h">
+    <ClInclude Include="src\Physics\Forces\Density.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\Forces\Pressure.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics\PhysicsSpecification.h">
+    <ClInclude Include="src\Physics\physicsSpecification.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics\Forces\CollisionHandler.h">
+    <ClInclude Include="src\Physics\Logic\CollisionHandler.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics\NeighbourSearch.h">
+    <ClInclude Include="src\Physics\Logic\NeighbourSearch.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\Forces\Viscosity.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics\Particles.h">
+    <ClInclude Include="src\Physics\Entities\Particles.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Cuda\Kernels.h" />
-    <ClInclude Include="src\Cuda\smoothingKernels.cuh" />
-    <ClInclude Include="src\Cuda\utils.cuh" />
-    <ClInclude Include="src\Physics\Flow.h">
+    <ClInclude Include="src\Physics\Cuda\Kernels.h" />
+    <ClInclude Include="src\Physics\Cuda\smoothingKernels.cuh" />
+    <ClInclude Include="src\Physics\Cuda\utils.cuh" />
+    <ClInclude Include="src\Physics\Logic\Flow.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\contrib\anchordict.h">
@@ -428,7 +428,7 @@
     <ClInclude Include="src\Core\SimulationLoader.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\ComonTypes.h">
+    <ClInclude Include="src\Core\CommonTypes.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="vendor\yaml-cpp\src\contrib\graphbuilderadapter.h">
@@ -507,8 +507,8 @@
     <None Include="src\Shaders\fragmentBG.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\Cuda\Kernels.cu" />
-    <CudaCompile Include="src\Cuda\smoothingKernels.cu" />
-    <CudaCompile Include="src\Cuda\utils.cu" />
+    <CudaCompile Include="src\Physics\Cuda\Kernels.cu" />
+    <CudaCompile Include="src\Physics\Cuda\smoothingKernels.cu" />
+    <CudaCompile Include="src\Physics\Cuda\utils.cu" />
   </ItemGroup>
 </Project>

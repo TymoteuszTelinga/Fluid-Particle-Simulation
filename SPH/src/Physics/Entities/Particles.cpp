@@ -1,9 +1,6 @@
 #include "Particles.h"
 
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-
-#include "Cuda/Kernels.h"
+#include "Physics/Cuda/Kernels.h"
 #include "iostream"
 
 

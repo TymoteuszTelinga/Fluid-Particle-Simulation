@@ -10,7 +10,7 @@ static void serializeObstacle(YAML::Emitter& out, const obstacle& o)
 	out << YAML::EndMap;
 };
 
-static void LoadSpecification(const YAML::Node& node, PhysicsSpecification& spec)
+static void LoadSpecification(const YAML::Node& node, physicsSpecification& spec)
 {
 	spec.Width = node["Width"].as<float>();
 	spec.Height = node["Height"].as<float>();

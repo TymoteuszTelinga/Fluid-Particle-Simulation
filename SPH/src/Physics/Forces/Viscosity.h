@@ -1,21 +1,20 @@
 #pragma once
-#include <vector>
-
 #include "Core/Base.h"
 
-#include "Physics/Particles.h"
-#include "Physics/PhysicsSpecification.h"
-#include "Physics/NeighbourSearch.h"
+#include "Physics/physicsSpecification.h"
+#include "Physics/Entities/Particles.h"
+#include "Physics/Logic/NeighbourSearch.h"
+#include "Physics/Logic/KernelFactors.h"
 
 class Viscosity
 {
 public:
-	Viscosity(PhysicsSpecification& spec, Ref<NeighbourSearch> neighbourSearch, Ref<Kernel> kernel) : p_spec(spec), neighbourSearch(neighbourSearch), kernel(kernel) {}
+	Viscosity(physicsSpecification& spec, Ref<NeighbourSearch> neighbourSearch, Ref<KernelFactors> kernel) : p_spec(spec), neighbourSearch(neighbourSearch), kernel(kernel) {}
 	void Apply(Ref<Particles> particles, float deltaTime);
 
 private:
-	PhysicsSpecification& p_spec;
+	physicsSpecification& p_spec;
 	Ref<NeighbourSearch> neighbourSearch;
-	Ref<Kernel> kernel;
+	Ref<KernelFactors> kernel;
 };
 

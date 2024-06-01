@@ -1,12 +1,12 @@
 #pragma once
 
 #include <vector>
-#include <algorithm>
+
 
 #include "Core/Base.h"
 
-#include "Physics/PhysicsSpecification.h"
-#include "Physics/Particles.h"
+#include "Physics/physicsSpecification.h"
+#include "Physics/Entities/Particles.h"
 
 struct LookupEntry {
 	size_t particleIndex = 0;
@@ -16,7 +16,7 @@ struct LookupEntry {
 class NeighbourSearch
 {
 public:
-	NeighbourSearch(PhysicsSpecification& spec) : p_spec(spec) {};
+	NeighbourSearch(physicsSpecification& spec) : p_spec(spec) {};
 
 	void UpdateSpatialLookup(Ref<Particles> particles);
 	Ref<std::vector<size_t>> GetParticleNeighbours(Ref<Particles> particles, size_t particleIndex)const;
@@ -32,7 +32,7 @@ private:
 	
 
 private:
-	PhysicsSpecification& p_spec;
+	physicsSpecification& p_spec;
 	Scope<std::vector<LookupEntry>> spatialLookup;
 	Scope<std::vector<int>> spatialLookupIndex;
 	Scope<std::vector<int>> spatialLookupKey;

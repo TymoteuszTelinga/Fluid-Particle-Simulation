@@ -1,4 +1,4 @@
-#include "Cuda/utils.cuh"
+#include "utils.cuh"
 
 __device__ size_t PositionToCellKey(float* positions_x, float* positions_y, size_t index, float kernelRange, int cellRows, int cellCols) {
 	int cellX = (int)(positions_x[index] / kernelRange);

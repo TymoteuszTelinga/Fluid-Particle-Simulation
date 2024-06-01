@@ -1,6 +1,6 @@
 #include "Density.h"
 
-#include "Cuda/Kernels.h"
+#include "Physics/Cuda/Kernels.h"
 
 void Density::Calculate(Ref<Particles> particles) const {
 	int cellRows = (int)(p_spec.Width / p_spec.KernelRange) + 1;

@@ -154,13 +154,13 @@
   <ItemGroup>
     <ClCompile Include="src\Core\FileDialog.cpp" />
     <ClCompile Include="src\Core\SimulationLoader.cpp" />
-    <ClCompile Include="src\Physics\Flow.cpp" />
-    <ClCompile Include="src\Physics\Particles.cpp" />
-    <ClCompile Include="src\Physics\NeighbourSearch.cpp" />
-    <ClCompile Include="src\Physics\Forces\CollisionHandler.cpp" />
+    <ClCompile Include="src\Physics\Logic\Flow.cpp" />
+    <ClCompile Include="src\Physics\Entities\Particles.cpp" />
+    <ClCompile Include="src\Physics\Logic\NeighbourSearch.cpp" />
+    <ClCompile Include="src\Physics\Logic\CollisionHandler.cpp" />
     <ClCompile Include="src\Physics\Forces\Pressure.cpp" />
-    <ClCompile Include="src\Physics\Properties\Density.cpp" />
-    <ClCompile Include="src\Physics\Kernel.cpp" />
+    <ClCompile Include="src\Physics\Forces\Density.cpp" />
+    <ClCompile Include="src\Physics\Logic\KernelFactors.cpp" />
     <ClCompile Include="src\Physics\Forces\Gravity.cpp" />
     <ClCompile Include="src\Physics\Physics.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -219,20 +219,20 @@
     <ClCompile Include="vendor\yaml-cpp\src\tag.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Core\ComonTypes.h" />
+    <ClInclude Include="src\Core\CommonTypes.h" />
     <ClInclude Include="src\Core\FileDialog.h" />
     <ClInclude Include="src\Core\SimulationLoader.h" />
-    <ClInclude Include="src\Physics\Flow.h" />
-    <ClInclude Include="src\Cuda\Kernels.h" />
-    <ClInclude Include="src\Cuda\smoothingKernels.cuh" />
-    <ClInclude Include="src\Cuda\utils.cuh" />
-    <ClInclude Include="src\Physics\Particles.h" />
-    <ClInclude Include="src\Physics\NeighbourSearch.h" />
-    <ClInclude Include="src\Physics\Forces\CollisionHandler.h" />
+    <ClInclude Include="src\Physics\Logic\Flow.h" />
+    <ClInclude Include="src\Physics\Cuda\Kernels.h" />
+    <ClInclude Include="src\Physics\Cuda\smoothingKernels.cuh" />
+    <ClInclude Include="src\Physics\Cuda\utils.cuh" />
+    <ClInclude Include="src\Physics\Entities\Particles.h" />
+    <ClInclude Include="src\Physics\Logic\NeighbourSearch.h" />
+    <ClInclude Include="src\Physics\Logic\CollisionHandler.h" />
     <ClInclude Include="src\Physics\Forces\Pressure.h" />
-    <ClInclude Include="src\Physics\PhysicsSpecification.h" />
-    <ClInclude Include="src\Physics\Properties\Density.h" />
-    <ClInclude Include="src\Physics\Kernel.h" />
+    <ClInclude Include="src\Physics\physicsSpecification.h" />
+    <ClInclude Include="src\Physics\Forces\Density.h" />
+    <ClInclude Include="src\Physics\Logic\KernelFactors.h" />
     <ClInclude Include="src\Physics\Forces\Gravity.h" />
     <ClInclude Include="src\Physics\Physics.h" />
     <ClInclude Include="src\Core\Application.h" />
@@ -326,9 +326,9 @@
     <None Include="src\Shaders\vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\Cuda\Kernels.cu" />
-    <CudaCompile Include="src\Cuda\smoothingKernels.cu" />
-    <CudaCompile Include="src\Cuda\utils.cu" />
+    <CudaCompile Include="src\Physics\Cuda\Kernels.cu" />
+    <CudaCompile Include="src\Physics\Cuda\smoothingKernels.cu" />
+    <CudaCompile Include="src\Physics\Cuda\utils.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

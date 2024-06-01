@@ -5,19 +5,10 @@
 
 typedef float (*KernelFunc)(float, float, float);
 
-class Kernel
+class KernelFactors
 {
 public:
 	void updateFactors(float kernelRadius);
-
-	static float Poly6(float distance, float radius, float factor);
-	static float Spiky3(float distance, float radius, float factor);
-	static float Spiky2(float distance, float radius, float factor);
-
-	static float Poly6Deriv(float distance, float radius, float factor);
-	static float Spiky3Deriv(float distance, float radius, float factor);
-	static float Spiky2Deriv(float distance, float radius, float factor);
-	static float ViscosityLaplacian(float distance, float radius, float factor);
 
 public:
 	float Poly6Factor = 0;

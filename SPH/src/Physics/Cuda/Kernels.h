@@ -1,7 +1,7 @@
 #pragma once
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-#include "Core/ComonTypes.h"
+#include "Core/CommonTypes.h"
 
 #define CUDA_CALL( call )               \
 {                                       \
@@ -11,7 +11,7 @@ if ( cudaSuccess != result )            \
 }
 
 const size_t TPB = 512;
-const size_t PARTICLES_LIMIT = 2000;
+const size_t PARTICLES_LIMIT = 40000;
 
 extern __device__ float c_positions_x[PARTICLES_LIMIT];
 extern __device__ float c_positions_y[PARTICLES_LIMIT];

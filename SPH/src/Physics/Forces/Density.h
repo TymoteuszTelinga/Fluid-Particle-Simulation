@@ -6,11 +6,12 @@
 #include "Physics/Logic/NeighbourSearch.h"
 #include "Physics/Logic/KernelFactors.h"
 
-class Pressure
+class Density
 {
+
 public:
-	Pressure(physicsSpecification& spec, Ref<NeighbourSearch> neighbourSearch, Ref<KernelFactors> kernel) : p_spec(spec), neighbourSearch(neighbourSearch), kernel(kernel){}
-	void Apply(Ref<Particles> particles, float deltaTime)const;
+	Density(physicsSpecification& spec, Ref<NeighbourSearch> neighbourSearch, Ref<KernelFactors> kernel) : p_spec(spec), neighbourSearch(neighbourSearch), kernel(kernel){}
+	void Calculate(Ref<Particles> particles) const;
 
 private:
 	physicsSpecification& p_spec;

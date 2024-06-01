@@ -4,23 +4,25 @@
 
 #include "Core/Base.h"
 
-#include "Physics/PhysicsSpecification.h"
-#include "Physics/Kernel.h"
-#include "Physics/Particles.h"
+#include "Physics/physicsSpecification.h"
 
-#include "Physics/Properties/Density.h"
+#include "Physics/Entities/Particles.h"
+
+#include "Physics/Forces/Density.h"
 #include "Physics/Forces/Gravity.h"
 #include "Physics/Forces/Pressure.h"
 #include "Physics/Forces/Viscosity.h"
-#include "Physics/Forces/CollisionHandler.h"
-#include "Physics/NeighbourSearch.h"
-#include "Physics/Flow.h"
+
+#include "Physics/Logic/NeighbourSearch.h"
+#include "Physics/Logic/KernelFactors.h"
+#include "Physics/Logic/CollisionHandler.h"
+#include "Physics/Logic/Flow.h"
 
 class Physics
 {
 public:
-	Physics(PhysicsSpecification& spec, std::vector<obstacle>& obstacles, flow_area in, flow_area out): p_spec(spec) {
-		m_Kernel = CreateRef<Kernel>();
+	Physics(physicsSpecification& spec, std::vector<obstacle>& obstacles, flow_area in, flow_area out): p_spec(spec) {
+		m_Kernel = CreateRef<KernelFactors>();
 		l_NeighbourSearch = CreateRef<NeighbourSearch>(p_spec);
 		l_Gravity = CreateScope<Gravity>(p_spec);
 		l_Density = CreateScope<Density>(p_spec, l_NeighbourSearch, m_Kernel);
@@ -32,12 +34,12 @@ public:
 
 	void Apply(Ref<Particles> particles, const float deltaTime, const size_t fillSize) const;
 
-	PhysicsSpecification& getSpecification() {
+	physicsSpecification& getSpecification() {
 		return p_spec;
 	}
 
 private:
-	PhysicsSpecification p_spec;
+	physicsSpecification p_spec;
 	Scope<Gravity> l_Gravity;
 	Scope<Pressure> l_Pressure;
 	Scope<Density> l_Density;
@@ -45,6 +47,6 @@ private:
 	Scope<CollisionHandler> l_CollisionHandler;
 	Scope<Flow> l_Flow;
 	Ref<NeighbourSearch> l_NeighbourSearch;
-	Ref<Kernel> m_Kernel;
+	Ref<KernelFactors> m_Kernel;
 };
 

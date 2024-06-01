@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 #include "Shader.h"
-#include "Core/ComonTypes.h"
+#include "Core/CommonTypes.h"
 #include <vector>
 
 

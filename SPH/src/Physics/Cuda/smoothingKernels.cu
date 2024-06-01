@@ -1,5 +1,4 @@
-#include "Cuda/smoothingKernels.cuh"
-
+#include "smoothingKernels.cuh"
 
 __device__ float poly6Kernel(float distance, float radius, float factor) {
 	if (distance <= radius) {

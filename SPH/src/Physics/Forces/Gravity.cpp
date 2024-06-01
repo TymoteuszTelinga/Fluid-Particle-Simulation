@@ -1,6 +1,6 @@
 #include "Gravity.h"
 
-#include "Cuda/Kernels.h"
+#include "Physics/Cuda/Kernels.h"
 
 
 void Gravity::Apply(Ref<Particles> particles, float deltaTime) const {

@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <time.h>  
 
-#include "Core\Base.h"
-#include "Physics/Particles.h"
+#include "Core/Base.h"
+#include "Core/CommonTypes.h"
+
+#include "Physics/Entities/Particles.h"
 
 class Flow
 {

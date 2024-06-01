@@ -1,6 +1,6 @@
 #include "Viscosity.h"
 
-#include "Cuda/Kernels.h"
+#include "Physics/Cuda/Kernels.h"
 
 void Viscosity::Apply(Ref<Particles> particles, float deltaTime) {
 	int cellRows = (int)(p_spec.Width / p_spec.KernelRange) + 1;

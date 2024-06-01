@@ -1,12 +1,8 @@
 #include "Kernels.h"
-#include "Cuda/smoothingKernels.cuh"
-#include "Cuda/utils.cuh"
+#include "Physics/Cuda/smoothingKernels.cuh"
+#include "Physics/Cuda/utils.cuh"
 
 #include "stdio.h"
-
-
-
-
 
 __device__ float c_positions_x[PARTICLES_LIMIT];
 __device__ float c_positions_y[PARTICLES_LIMIT];
@@ -23,7 +19,6 @@ __device__ int c_lookup_keys[PARTICLES_LIMIT];
 
 __constant__ int offset_y[] = { -1, -1, -1, 0, 0, 0, 1, 1, 1};
 __constant__ int offset_x[] = { -1, 0, 1, -1, 0, 1, -1, 0, 1};
-
 
 
 __global__ void GravityKernel(float acc, size_t size, float deltaTime) {
