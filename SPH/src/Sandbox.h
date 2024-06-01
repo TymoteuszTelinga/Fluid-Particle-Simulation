@@ -39,9 +39,11 @@ private:
 
 
 	Ref<Particles> m_Particles = nullptr;
-	glm::vec3 m_Tint;
+	glm::vec3 m_Tint = glm::vec3(0.260f, 0.739f, 1.000f);
+
+	bool bSetingIsOpen = false;
   
-  //Debug info
+	//Debug info
 	float m_FrameTime = 0.0f;
 	float m_CountTime = 0.0f;
 	int m_FPS = 0;

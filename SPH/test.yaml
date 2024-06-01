@@ -1,3 +1,13 @@
+Physics:
+    Width: 19.0
+    Height: 11.0
+    Gravity: 9.81
+    CollisionDamping: 0.2
+    KernelRange: 0.35
+    RestDensity: 55
+    GasConstant: 500
+    NearPressureCoef: 18
+    Viscosity: 0.06
 InArea:
     Min: [8, 4]
     Max: [9, 5]

@@ -20,6 +20,13 @@ static void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GL
 	}
 }
 
+struct ParticleVertex
+{
+	glm::vec2 Position;
+	glm::vec2 UV;
+	glm::vec3 Color;
+};
+
 struct QuadVertex
 {
 	glm::vec2 Position;
@@ -29,28 +36,37 @@ struct QuadVertex
 
 struct RendererData
 {
-	static const uint32_t MaxQuads = 20000;
-	static const uint32_t MaxVertices = MaxQuads * 4;
-	static const uint32_t MaxIndices = MaxQuads * 6;
+	//Particle Data
+	static const uint32_t MaxParticles = 20000;
+	static const uint32_t MaxParticleVertices = MaxParticles * 4;
+	static const uint32_t MaxParticleIndices = MaxParticles * 6;
 	float ParticleSize = 5.f;
 
-	//Particle VAO, VBO, IBO
+	Ref<VertexArray> ParticleVertexArray;
+	Ref<VertexBuffer> ParticleVertexBuffer;
+	Ref<IndexBuffer> ParticleIndexBuffer;
+	Ref<Shader> ParticleShader;
+
+	uint32_t ParticleIndexCount = 0;
+	ParticleVertex* ParticleVertexBufferBase = nullptr; // store adres of cpu array
+	ParticleVertex* ParticleVertexBufferPtr = nullptr; // store aders of next Particle in cpu array
+
+	glm::vec4 ParticleVertexPositions[4];
+
+	//Obstacles Data
+	static const uint32_t MaxQuads = 1000;
+	static const uint32_t MaxQuadVertices = MaxQuads * 4;
+	static const uint32_t MaxQuadIndices = MaxQuads * 6;
+
 	Ref<VertexArray> QuadVertexArray;
 	Ref<VertexBuffer> QuadVertexBuffer;
 	Ref<IndexBuffer> QuadIndexBuffer;
-	//Obstacles VAO, VBO, IBO
-	Ref<VertexArray> BackgroundVertexArray;
-	Ref<VertexBuffer> BackgroundBuffer;
-	Ref<IndexBuffer> BackgroundIndexBuffer;
-
 	Ref<Shader> QuadShader;
-	Ref<Shader> BackgroundShader;
 
-	uint32_t QuadIndexCount = 0;
-	QuadVertex* QuadVertexBufferBase = nullptr; // store adres of cpu array
-	QuadVertex* QuadVertexBufferPtr = nullptr; // store aders of next Quad in cpu array
+	uint32_t QuadCount = 0;
+	QuadVertex* QuadVertexBufferBase = nullptr;
 
-	glm::vec4 QuadVertexPositions[4];
+
 };
 
 static RendererData s_Data;
@@ -81,61 +97,67 @@ void Renderer::Init()
 	//glEnable(GL_DEPTH_TEST);
 
 	glEnable(GL_BLEND);
-	//glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
-	//glBlendEquation(GL_MAX);
-	//glBlendFunc(GL_ONE, GL_ONE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
 
 	//Init Data
-	s_Data.QuadVertexArray = CreateRef<VertexArray>();
-	s_Data.QuadVertexBuffer = CreateRef<VertexBuffer>(nullptr, s_Data.MaxVertices * sizeof(QuadVertex));
-	VertexBufferLayout Layout;
-	Layout.Pushf(2); //Position
-	Layout.Pushf(2); //Texture
-	Layout.Pushf(3); //Tint Color
-	s_Data.QuadVertexArray->AddBuffer(*s_Data.QuadVertexBuffer, Layout);
 
-	s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
+	//Partice
+	s_Data.ParticleVertexArray = CreateRef<VertexArray>();
+	s_Data.ParticleVertexBuffer = CreateRef<VertexBuffer>(nullptr, s_Data.MaxParticleVertices * sizeof(ParticleVertex));
+	VertexBufferLayout ParticelLayout;
+	ParticelLayout.Pushf(2); //Position
+	ParticelLayout.Pushf(2); //Texture
+	ParticelLayout.Pushf(3); //Tint Color
+	s_Data.ParticleVertexArray->AddBuffer(*s_Data.ParticleVertexBuffer, ParticelLayout);
+
+	s_Data.ParticleVertexBufferBase = new ParticleVertex[s_Data.MaxParticleVertices];
 
 	//precalculate Inices
-	uint32_t* quadIndices = new uint32_t[s_Data.MaxIndices];
+	uint32_t* ParticleIndices = new uint32_t[s_Data.MaxParticleIndices];
 	uint32_t offset = 0;
-	for (uint32_t i = 0; i < s_Data.MaxIndices; i += 6)
+	for (uint32_t i = 0; i < s_Data.MaxParticleIndices; i += 6)
 	{
-		quadIndices[i + 0] = offset + 0;
-		quadIndices[i + 1] = offset + 1;
-		quadIndices[i + 2] = offset + 2;
+		ParticleIndices[i + 0] = offset + 0;
+		ParticleIndices[i + 1] = offset + 1;
+		ParticleIndices[i + 2] = offset + 2;
 
-		quadIndices[i + 3] = offset + 2;
-		quadIndices[i + 4] = offset + 3;
-		quadIndices[i + 5] = offset + 0;
+		ParticleIndices[i + 3] = offset + 2;
+		ParticleIndices[i + 4] = offset + 3;
+		ParticleIndices[i + 5] = offset + 0;
 
 		offset += 4;
 	}
-	s_Data.QuadIndexBuffer = CreateRef<IndexBuffer>(quadIndices, s_Data.MaxIndices);
-	delete[] quadIndices;
+	s_Data.ParticleIndexBuffer = CreateRef<IndexBuffer>(ParticleIndices, s_Data.MaxParticleIndices);
+	
 
-	s_Data.QuadVertexPositions[0] = { -s_Data.ParticleSize, -s_Data.ParticleSize, 0.0f, 1.0f };
-	s_Data.QuadVertexPositions[1] = {  s_Data.ParticleSize, -s_Data.ParticleSize, 0.0f, 1.0f };
-	s_Data.QuadVertexPositions[2] = {  s_Data.ParticleSize,  s_Data.ParticleSize, 0.0f, 1.0f };
-	s_Data.QuadVertexPositions[3] = { -s_Data.ParticleSize,  s_Data.ParticleSize, 0.0f, 1.0f };
+	s_Data.ParticleVertexPositions[0] = { -s_Data.ParticleSize, -s_Data.ParticleSize, 0.0f, 1.0f };
+	s_Data.ParticleVertexPositions[1] = {  s_Data.ParticleSize, -s_Data.ParticleSize, 0.0f, 1.0f };
+	s_Data.ParticleVertexPositions[2] = {  s_Data.ParticleSize,  s_Data.ParticleSize, 0.0f, 1.0f };
+	s_Data.ParticleVertexPositions[3] = { -s_Data.ParticleSize,  s_Data.ParticleSize, 0.0f, 1.0f };
 
-	s_Data.QuadShader = CreateRef<Shader>("src\\Shaders\\vertex.glsl", "src\\Shaders\\fragment.glsl");
+	s_Data.ParticleShader = CreateRef<Shader>("src\\Shaders\\vertex.glsl", "src\\Shaders\\fragment.glsl");
 
-	//background Data
-	s_Data.BackgroundIndexBuffer = CreateRef<IndexBuffer>(nullptr, 0);
-	s_Data.BackgroundBuffer = CreateRef<VertexBuffer>(nullptr, 0);
+	//Quad Data
+	s_Data.QuadVertexArray = CreateRef<VertexArray>();
+	s_Data.QuadVertexBuffer = CreateRef<VertexBuffer>(nullptr, s_Data.MaxQuadVertices * sizeof(QuadVertex));
+	VertexBufferLayout QuadLayout;
+	QuadLayout.Pushf(2);
+	QuadLayout.Pushf(2);
+	QuadLayout.Pushf(3);
+	s_Data.QuadVertexArray->AddBuffer(*s_Data.QuadVertexBuffer, QuadLayout);
 
-	s_Data.BackgroundVertexArray = CreateRef<VertexArray>();
-	s_Data.BackgroundVertexArray->AddBuffer(*s_Data.BackgroundBuffer, Layout);
-	s_Data.BackgroundShader = CreateRef<Shader>("src\\Shaders\\vertex.glsl", "src\\Shaders\\fragmentBG.glsl");
+	s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxQuadVertices];
+
+	s_Data.QuadIndexBuffer = CreateRef<IndexBuffer>(ParticleIndices, s_Data.MaxQuadIndices);
+
+	s_Data.QuadShader = CreateRef<Shader>("src\\Shaders\\vertex.glsl", "src\\Shaders\\fragmentBG.glsl");
+	delete[] ParticleIndices;
 
 }
 
 void Renderer::Shutdown()
 {
-	delete[] s_Data.QuadVertexBufferBase;
+	delete[] s_Data.ParticleVertexBufferBase;
 }
 
 void Renderer::SetColor(float r, float g, float b, float a)
@@ -153,53 +175,59 @@ void Renderer::Clear()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::SetObstacles(const std::vector<obstacle>& obstacles)
+void Renderer::ResetRectangles()
 {
-	uint32_t Indices = obstacles.size() * 6;
-	uint32_t* quadIndices = new uint32_t[Indices];
-	uint32_t offset = 0;
-	for (uint32_t i = 0; i < Indices; i += 6)
+	s_Data.QuadCount = 0;
+}
+
+void Renderer::AddRectangle(const glm::vec2& min, const glm::vec2& max, const glm::vec3& color)
+{
+	if (s_Data.QuadCount >= s_Data.MaxQuads)
 	{
-		quadIndices[i + 0] = offset + 0;
-		quadIndices[i + 1] = offset + 1;
-		quadIndices[i + 2] = offset + 2;
-
-		quadIndices[i + 3] = offset + 2;
-		quadIndices[i + 4] = offset + 3;
-		quadIndices[i + 5] = offset + 0;
-
-		offset += 4;
+		return;
 	}
-	s_Data.BackgroundIndexBuffer = CreateRef<IndexBuffer>(quadIndices, Indices);
-	delete[] quadIndices;
+	/*
+	p4--p3
+	|	|
+	|	|
+	p1--p2
+	*/
 
-	uint32_t Vertexes = obstacles.size() * 4;
-	QuadVertex* vertexBuffer = new QuadVertex[Vertexes];
-	for (uint32_t i = 0, j = 0; i < Vertexes; i+=4, j++)
-	{
+	QuadVertex p1;
+	p1.Position = glm::vec2(min);
+	p1.Color = color;
+	QuadVertex p2;
+	p2.Position = glm::vec2(max.x, min.y);
+	p2.Color = color;
+	QuadVertex p3;
+	p3.Position = glm::vec2(max);
+	p3.Color = color;
+	QuadVertex p4;
+	p4.Position = glm::vec2(min.x, max.y);
+	p4.Color = color;
 
-		vertexBuffer[i + 0].Position = glm::vec2(obstacles[j].x_pos, obstacles[j].y_pos);
-		vertexBuffer[i + 1].Position = glm::vec2(obstacles[j].x_pos + obstacles[j].width, obstacles[j].y_pos);
-		vertexBuffer[i + 2].Position = glm::vec2(obstacles[j].x_pos + obstacles[j].width, obstacles[j].y_pos + obstacles[j].height);
-		vertexBuffer[i + 3].Position = glm::vec2(obstacles[j].x_pos, obstacles[j].y_pos + obstacles[j].height);
-	}
-	s_Data.BackgroundBuffer = CreateRef<VertexBuffer>(vertexBuffer, Vertexes * sizeof(QuadVertex));
-	delete[] vertexBuffer;
+	uint32_t index = s_Data.QuadCount * 4;
 
-	VertexBufferLayout Layout;
-	Layout.Pushf(2); //Position
-	Layout.Pushf(2); //Texture
-	Layout.Pushf(3); //Tint Color
-	s_Data.BackgroundVertexArray->AddBuffer(*s_Data.BackgroundBuffer, Layout);
+	s_Data.QuadVertexBufferBase[index + 0] = p1;
+	s_Data.QuadVertexBufferBase[index + 1] = p2;
+	s_Data.QuadVertexBufferBase[index + 2] = p3;
+	s_Data.QuadVertexBufferBase[index + 3] = p4;
+
+	s_Data.QuadCount ++;
+}
+
+void Renderer::UpdateRectangles()
+{
+	s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, (s_Data.QuadCount * 4) * sizeof(QuadVertex));
 }
 
 void Renderer::SetParticleSize(float particleSize)
 {
 	s_Data.ParticleSize = particleSize;
-	s_Data.QuadVertexPositions[0] = { -s_Data.ParticleSize, -s_Data.ParticleSize, 0.0f, 1.0f };
-	s_Data.QuadVertexPositions[1] = {  s_Data.ParticleSize, -s_Data.ParticleSize, 0.0f, 1.0f };
-	s_Data.QuadVertexPositions[2] = {  s_Data.ParticleSize,  s_Data.ParticleSize, 0.0f, 1.0f };
-	s_Data.QuadVertexPositions[3] = { -s_Data.ParticleSize,  s_Data.ParticleSize, 0.0f, 1.0f };
+	s_Data.ParticleVertexPositions[0] = { -s_Data.ParticleSize, -s_Data.ParticleSize, 0.0f, 1.0f };
+	s_Data.ParticleVertexPositions[1] = {  s_Data.ParticleSize, -s_Data.ParticleSize, 0.0f, 1.0f };
+	s_Data.ParticleVertexPositions[2] = {  s_Data.ParticleSize,  s_Data.ParticleSize, 0.0f, 1.0f };
+	s_Data.ParticleVertexPositions[3] = { -s_Data.ParticleSize,  s_Data.ParticleSize, 0.0f, 1.0f };
 }
 
 void Renderer::BeginScene(const Camera& camera)
@@ -211,6 +239,7 @@ void Renderer::BeginScene(const Camera& camera)
 	s_CameraData.CameraWidth = camera.GetExtends().x * 2;
 
 	StartBatch();
+	DrawBackground();
 }
 
 void Renderer::DrawQuad(const glm::vec2& position)
@@ -230,26 +259,26 @@ void Renderer::DrawQuad(const glm::vec2& position, const glm::vec3& color)
 	constexpr size_t quadVertexCount = 4;
 	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-	if (s_Data.QuadIndexCount >= RendererData::MaxIndices)
+	if (s_Data.ParticleIndexCount >= RendererData::MaxParticleIndices)
 		NextBatch();
 
 	for (size_t i = 0; i < quadVertexCount; i++)
 	{
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-		s_Data.QuadVertexBufferPtr->UV = textureCoords[i];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr++;
+		s_Data.ParticleVertexBufferPtr->Position = transform * s_Data.ParticleVertexPositions[i];
+		s_Data.ParticleVertexBufferPtr->UV = textureCoords[i];
+		s_Data.ParticleVertexBufferPtr->Color = color;
+		s_Data.ParticleVertexBufferPtr++;
 	}
 
-	s_Data.QuadIndexCount += 6;
+	s_Data.ParticleIndexCount += 6;
 
-	s_Stats.QuadCount++;
+	s_Stats.ParticleCount++;
 }
 
 void Renderer::EndScene()
 {
 	Flush();
-	DrawBackground();
+	
 }
 
 void Renderer::ResetStats()
@@ -264,8 +293,9 @@ Renderer::Statistics Renderer::GetStats()
 
 void Renderer::StartBatch()
 {
-	s_Data.QuadIndexCount = 0;
-	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+	s_Data.ParticleIndexCount = 0;
+	s_Data.ParticleVertexBufferPtr = s_Data.ParticleVertexBufferBase;
+
 }
 
 void Renderer::NextBatch()
@@ -276,25 +306,29 @@ void Renderer::NextBatch()
 
 void Renderer::Flush()
 {
-	uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
-	s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
+	uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.ParticleVertexBufferPtr - (uint8_t*)s_Data.ParticleVertexBufferBase);
+	s_Data.ParticleVertexBuffer->SetData(s_Data.ParticleVertexBufferBase, dataSize);
 
-	s_Data.QuadShader->Bind();
-	s_Data.QuadShader->SetUniformMat4f("MVPMatrix", s_CameraData.ViewProjectionMatrix);
-	s_Data.QuadShader->SetUniform1f("Width", s_CameraData.CameraWidth);
-	s_Data.QuadVertexArray->Bind();
-	s_Data.QuadIndexBuffer->Bind();
-	glDrawElements(GL_TRIANGLES, s_Data.QuadIndexCount, GL_UNSIGNED_INT, nullptr);
+	s_Data.ParticleShader->Bind();
+	s_Data.ParticleShader->SetUniformMat4f("MVPMatrix", s_CameraData.ViewProjectionMatrix);
+	s_Data.ParticleShader->SetUniform1f("Width", s_CameraData.CameraWidth);
+	s_Data.ParticleVertexArray->Bind();
+	s_Data.ParticleIndexBuffer->Bind();
+	glDrawElements(GL_TRIANGLES, s_Data.ParticleIndexCount, GL_UNSIGNED_INT, nullptr);
 
 	s_Stats.DrawCalls++;
 }
 
 void Renderer::DrawBackground()
 {
-	s_Data.BackgroundShader->Bind();
-	s_Data.BackgroundShader->SetUniformMat4f("MVPMatrix", s_CameraData.ViewProjectionMatrix);
-	s_Data.BackgroundVertexArray->Bind();
-	s_Data.BackgroundIndexBuffer->Bind();
-	glDrawElements(GL_TRIANGLES, s_Data.BackgroundIndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+	//glEnable(GL_DEPTH_TEST);
+
+	s_Data.QuadShader->Bind();
+	s_Data.QuadShader->SetUniformMat4f("MVPMatrix", s_CameraData.ViewProjectionMatrix);
+	s_Data.QuadVertexArray->Bind();
+	s_Data.QuadIndexBuffer->Bind();
+	glDrawElements(GL_TRIANGLES, s_Data.QuadCount*6, GL_UNSIGNED_INT, nullptr);
 	s_Stats.DrawCalls++;
+
+	//glDisable(GL_DEPTH_TEST);
 }

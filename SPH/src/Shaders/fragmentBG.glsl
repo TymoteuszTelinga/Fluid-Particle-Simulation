@@ -8,5 +8,5 @@ in vec4 TintColor;
 
 void main()
 {
-    color = vec4(vec3(1.f),1.f);
+    color = vec4(TintColor);
 }

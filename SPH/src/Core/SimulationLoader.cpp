@@ -23,6 +23,19 @@ static void LoadSpecification(const YAML::Node& node, PhysicsSpecification& spec
 	spec.ViscosityStrength = node["Viscosity"].as<float>();
 }
 
+SimulationLoader::SimulationLoader()
+{
+	m_PhysicsSpec.Width = 19.f;
+	m_PhysicsSpec.Height = 11.f;
+	m_PhysicsSpec.GravityAcceleration = 9.81f;
+	m_PhysicsSpec.CollisionDamping = 0.2;
+	m_PhysicsSpec.KernelRange = 0.35;
+	m_PhysicsSpec.RestDensity = 55;
+	m_PhysicsSpec.GasConstant = 500;
+	m_PhysicsSpec.NearPressureCoef = 18;
+	m_PhysicsSpec.ViscosityStrength = 0.06;
+}
+
 bool SimulationLoader::Load(const std::string& filepath)
 {
 	m_Obstacles.clear();

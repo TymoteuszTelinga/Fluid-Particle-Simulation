@@ -7,16 +7,17 @@
 #include "iostream"
 
 
-Particles::Particles(size_t capacity) : capacity(capacity), size(0)
+Particles::Particles(size_t capacity, size_t maxSize) 
+	: capacity(capacity), size(0), maxSize(maxSize)
 {
-	positions_x = new float[capacity];
-	positions_y = new float[capacity];
+	positions_x = new float[maxSize];
+	positions_y = new float[maxSize];
 
-	velocities_x = new float[capacity];
-	velocities_y = new float[capacity];
+	velocities_x = new float[maxSize];
+	velocities_y = new float[maxSize];
 
-	predictedPositions_x = new float[capacity];
-	predictedPositions_y = new float[capacity];
+	predictedPositions_x = new float[maxSize];
+	predictedPositions_y = new float[maxSize];
 
 	CUDA_CALL(cudaGetSymbolAddress((void**)&c_positions_x_addr, c_positions_x));
 	CUDA_CALL(cudaGetSymbolAddress((void**)&c_positions_y_addr, c_positions_y));
@@ -26,7 +27,7 @@ Particles::Particles(size_t capacity) : capacity(capacity), size(0)
 	CUDA_CALL(cudaGetSymbolAddress((void**)&c_pred_positions_y_addr, c_predicted_positions_y));
 	CUDA_CALL(cudaGetSymbolAddress((void**)&c_lookup_indexes_addr, c_lookup_indexes));
 	CUDA_CALL(cudaGetSymbolAddress((void**)&c_lookup_keys_addr, c_lookup_keys));
-	CUDA_CALL(cudaMalloc(&c_indices_addr, capacity * sizeof(int)));
+	CUDA_CALL(cudaMalloc(&c_indices_addr, maxSize * sizeof(int)));
 	c_indices_size = capacity;
 }
 
@@ -83,6 +84,12 @@ size_t Particles::getSize() {
 
 size_t Particles::getCapacity() {
 	return capacity;
+}
+
+void Particles::setCapacity(size_t newCapacity)
+{
+	capacity = std::min(newCapacity, maxSize);
+	size = std::min(newCapacity, size);
 }
 
 glm::vec2 Particles::getPosition(size_t index) {

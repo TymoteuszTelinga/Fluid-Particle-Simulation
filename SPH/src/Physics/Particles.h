@@ -6,13 +6,14 @@
 class Particles
 {
 public:
-	Particles(size_t capacity);
+	Particles(size_t capacity, size_t maxSize);
 
 	~Particles();
 
 	bool addParticle(float x_pos, float y_pos);
 	size_t getSize();
 	size_t getCapacity();
+	void setCapacity(size_t newCapacity);
 
 	glm::vec2 getPosition(size_t index);
 	glm::vec2 getPredictedPosition(size_t index);
@@ -26,7 +27,8 @@ public:
 		
 
 private:
-	const size_t capacity;
+	const size_t maxSize;
+	size_t capacity;
 	size_t size;
 
 	float* positions_x;

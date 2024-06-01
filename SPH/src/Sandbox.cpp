@@ -7,11 +7,9 @@
 #include "Core/FileDialog.h"
 
 Sandbox::Sandbox(const ApplicationSpecification& spec)
-	:Application(spec), m_Tint(1.0f), m_Width(spec.Width), m_Height(spec.Height)
+	:Application(spec), m_Width(spec.Width), m_Height(spec.Height)
 {
 	m_Camera = CreateScope<Camera>(spec.Width, spec.Height);
-
-	//LoadData("test.yaml");
 
 }
 
@@ -67,17 +65,9 @@ void Sandbox::OnUpdate(float DeltaTime)
 		m_Camera->SetPosition(cameraPos);
 	}
 
-	/*
-	static int count = 0;
-	if (count <= 10) {
-		count++;
-		return;
-	}
-	*/
-
 	if (m_Physics && m_Particles)
 	{
-		for (int i = 0; i < 4; i++) 
+		//for (int i = 0; i < 4; i++) 
 		{
 			m_Physics->Apply(m_Particles, DeltaTime / 4.0f, 5);
 		}
@@ -94,35 +84,49 @@ void Sandbox::OnRender()
 		{
 			Renderer::DrawQuad(m_Particles->getPosition(i) * m_Physics->getSpecification().MetersToPixel, m_Tint);
 		}
-
-		Renderer::DrawQuad(glm::vec2(8, 4) * m_Physics->getSpecification().MetersToPixel, glm::vec3(1, 0, 0));
-		Renderer::DrawQuad(glm::vec2(8, 5) * m_Physics->getSpecification().MetersToPixel, glm::vec3(1, 0, 0));
-		Renderer::DrawQuad(glm::vec2(9, 5) * m_Physics->getSpecification().MetersToPixel, glm::vec3(1, 0, 0));
-		Renderer::DrawQuad(glm::vec2(9, 4) * m_Physics->getSpecification().MetersToPixel, glm::vec3(1, 0, 0));
-
-		Renderer::DrawQuad(glm::vec2(19/2.f, 11/2.f) * m_Physics->getSpecification().MetersToPixel, glm::vec3(0, 1, 0));
-		Renderer::DrawQuad(glm::vec2(-19 / 2.f, -11 / 2.f) * m_Physics->getSpecification().MetersToPixel, glm::vec3(0, 1, 0));
-		Renderer::DrawQuad(glm::vec2(19 / 2.f, -11 / 2.f) * m_Physics->getSpecification().MetersToPixel, glm::vec3(0, 1, 0));
-		Renderer::DrawQuad(glm::vec2(-19 / 2.f, 11 / 2.f) * m_Physics->getSpecification().MetersToPixel, glm::vec3(0, 1, 0));
 	}
 
 	Renderer::EndScene();
 
-
-	ImGui::Begin("Test");
-	if (ImGui::Button("Open..."))
+	//ImGui interface render
+	if (ImGui::BeginMainMenuBar())
 	{
-		std::string path = FileDialog::OpenFile("Layout (*.yaml)\0*.yaml\0");
-		if (!path.empty())
+		if (ImGui::BeginMenu("Layout"))
 		{
-			LoadData(path);
+			if (ImGui::MenuItem("Open..."))
+			{
+				std::string path = FileDialog::OpenFile("Layout (*.yaml)\0*.yaml\0");
+				if (!path.empty())
+				{
+					LoadData(path);
+				}
+				ResetDelta();
+			}
+
+			ImGui::EndMenu();
 		}
-		ResetDelta();
+
+		if (ImGui::BeginMenu("Window"))
+		{
+			if (ImGui::MenuItem("Setting"))
+			{
+				bSetingIsOpen = true;
+			}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
 	}
+
+	if (!bSetingIsOpen)
+	{
+		return;
+	}
+
+	ImGui::Begin("Settings", &bSetingIsOpen);
 	if (ImGui::CollapsingHeader("Stats")) 
 	{
 		ImGui::Text("Draw calls %d", Renderer::GetStats().DrawCalls);
-		ImGui::Text("Quads Count %d", Renderer::GetStats().QuadCount);
+		ImGui::Text("Quads Count %d", Renderer::GetStats().ParticleCount);
 		ImGui::Separator();
 		ImGui::Text("FPS %d", m_FPS);
 		ImGui::Text("Frame Time %f ms", m_FrameTime);
@@ -133,12 +137,16 @@ void Sandbox::OnRender()
 		ImGui::Text("Camera zoom: %.2f", m_Camera->GetZoomLevel());
 		ImGui::ColorEdit3("Particle", &m_Tint.r);
 	}
-
 	if (ImGui::CollapsingHeader("Physics") && m_Physics) 
 	{
 		PhysicsSpecification& spec = m_Physics->getSpecification();
 
 		ImGui::SeparatorText("Particle");
+		uint32_t particelLimit = m_Particles->getCapacity();
+		if (ImGui::DragScalar("Limit", ImGuiDataType_U32, &particelLimit, 50, 0, &PARTICLES_LIMIT))
+		{
+			m_Particles->setCapacity(particelLimit);
+		}
 
 		ImGui::SeparatorText("Forces");
 		ImGui::DragFloat("Collision Damping", &spec.CollisionDamping, 0.05f, 0.0f, 1.0f);
@@ -174,32 +182,40 @@ bool Sandbox::Scroll(ScrollEvent& e)
 void Sandbox::LoadData(const std::string& filepath)
 {
 	SimulationLoader Loader;
-	Loader.Load(filepath);
+	if (!Loader.Load(filepath))
+	{
+		return;
+	}
 
 	std::vector<obstacle> obstacles = Loader.GetObstacles();
 	flow_area in = Loader.GetInArea();
 	flow_area out = Loader.GetOutArea();
 
-	PhysicsSpecification spec;
-	spec.Width = 19.f;
-	spec.Height = 11.f;
-	spec.GravityAcceleration = 9.81f;
-	spec.CollisionDamping = 0.2;
-	spec.KernelRange = 0.35;
-	spec.RestDensity = 55;
-	spec.GasConstant = 500;
-	spec.NearPressureCoef = 18;
-	spec.ViscosityStrength = 0.06;
+	PhysicsSpecification spec = Loader.GetSpecification();
 
 	m_Physics = CreateScope<Physics>(spec, obstacles, in, out);
-	m_Particles = CreateRef<Particles>(PARTICLES_LIMIT);
+	m_Particles = CreateRef<Particles>(2000,PARTICLES_LIMIT);
+
+	Renderer::ResetRectangles();
+
+	glm::vec2 min = glm::vec2(-(spec.Width / 2.f), -(spec.Height / 2.f)) * spec.MetersToPixel;
+	glm::vec2 max = glm::vec2(spec.Width / 2.f, spec.Height / 2.f) * spec.MetersToPixel;
+	Renderer::AddRectangle(min, max, glm::vec3(0.1, 0.1, 0.1));
 
 	for (size_t i = 0; i < obstacles.size(); i++)
 	{
-		obstacles[i].x_pos *= spec.MetersToPixel;
-		obstacles[i].y_pos *= spec.MetersToPixel;
-		obstacles[i].width *= spec.MetersToPixel;
-		obstacles[i].height *= spec.MetersToPixel;
+		glm::vec2 min = glm::vec2(obstacles[i].x_pos, obstacles[i].y_pos) * spec.MetersToPixel;
+		glm::vec2 max = min + glm::vec2(obstacles[i].width, obstacles[i].height) * spec.MetersToPixel;
+		Renderer::AddRectangle(min, max);
 	}
-	Renderer::SetObstacles(obstacles);
+
+	glm::vec2 outMin = glm::vec2(out.x_pos, out.y_pos) * spec.MetersToPixel;
+	glm::vec2 outMax = outMin + glm::vec2(out.width, out.height) * spec.MetersToPixel;
+	Renderer::AddRectangle(outMin, outMax, glm::vec3(0.5, 0, 0));
+
+	glm::vec2 inMin = glm::vec2(in.x_pos, in.y_pos) * spec.MetersToPixel;
+	glm::vec2 inMax = inMin + glm::vec2(in.width, in.height) * spec.MetersToPixel;
+	Renderer::AddRectangle(inMin, inMax, glm::vec3(0, 0.5, 0));
+
+	Renderer::UpdateRectangles();
 }
