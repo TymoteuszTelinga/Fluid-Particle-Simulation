@@ -19,7 +19,7 @@
 class Sandbox : public Application
 {
 public:
-	Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec, std::vector<obstacle>& obstacles, flow_area in, flow_area out);
+	Sandbox(const ApplicationSpecification& spec);
 	~Sandbox() {};
 
 	virtual void OnEvent(Event& e) override;
@@ -35,7 +35,7 @@ private:
 	Scope<Physics> m_Physics = nullptr;
 	//Camera
 	Scope<Camera> m_Camera;
-	float m_CameraSpeed = 100.0f;
+	float m_CameraSpeed = 400.0f;
 
 
 	Ref<Particles> m_Particles = nullptr;

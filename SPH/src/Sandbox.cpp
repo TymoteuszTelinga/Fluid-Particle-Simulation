@@ -6,40 +6,13 @@
 #include "Core/SimulationLoader.h"
 #include "Core/FileDialog.h"
 
-Sandbox::Sandbox(const ApplicationSpecification& spec, PhysicsSpecification& p_spec, std::vector<obstacle>& obstacles, flow_area in, flow_area out)
+Sandbox::Sandbox(const ApplicationSpecification& spec)
 	:Application(spec), m_Tint(1.0f), m_Width(spec.Width), m_Height(spec.Height)
 {
 	m_Camera = CreateScope<Camera>(spec.Width, spec.Height);
 
 	//LoadData("test.yaml");
-	
-	/*
 
-	int particles_amount = 0;
-	int row_amount = int(sqrt(particles_amount));
-	m_Particles = CreateRef<Particles>(PARTICLES_LIMIT);
-
-	int numX = ceil(sqrt(s.x / s.y * particles_amount + (s.x - s.y) * (s.x - s.y) / (4 * s.y * s.y)) - (s.x - s.y) / (2 * s.y));
-	int i = 0;
-	for (int y = 0; y < numY; y++)
-	{
-		for (int x = 0; x < numX; x++)
-		{
-			if (i >= particles_amount) {
-				break;
-			}
-
-			float tx = numX <= 1 ? 0.5f : x / (numX - 1.0f);
-			float ty = numY <= 1 ? 0.5f : y / (numY - 1.0f);
-
-			glm::vec2 pos((tx - 0.5f) * s.x, (ty - 0.5f) * s.y);
-
-			pos += spawnCentre;
-			m_Particles->addParticle(pos.x, pos.y);
-			i++;
-		}
-	}
-	*/
 }
 
 void Sandbox::OnEvent(Event& e)
@@ -127,11 +100,6 @@ void Sandbox::OnRender()
 		Renderer::DrawQuad(glm::vec2(9, 5) * m_Physics->getSpecification().MetersToPixel, glm::vec3(1, 0, 0));
 		Renderer::DrawQuad(glm::vec2(9, 4) * m_Physics->getSpecification().MetersToPixel, glm::vec3(1, 0, 0));
 
-		Renderer::DrawQuad(glm::vec2(-4, -4) * m_Physics->getSpecification().MetersToPixel, glm::vec3(1, 0, 0));
-		Renderer::DrawQuad(glm::vec2(-2,  8) * m_Physics->getSpecification().MetersToPixel, glm::vec3(1, 0, 0));
-		Renderer::DrawQuad(glm::vec2(-4,  8) * m_Physics->getSpecification().MetersToPixel, glm::vec3(1, 0, 0));
-		Renderer::DrawQuad(glm::vec2(-2, -4) * m_Physics->getSpecification().MetersToPixel, glm::vec3(1, 0, 0));
-
 		Renderer::DrawQuad(glm::vec2(19/2.f, 11/2.f) * m_Physics->getSpecification().MetersToPixel, glm::vec3(0, 1, 0));
 		Renderer::DrawQuad(glm::vec2(-19 / 2.f, -11 / 2.f) * m_Physics->getSpecification().MetersToPixel, glm::vec3(0, 1, 0));
 		Renderer::DrawQuad(glm::vec2(19 / 2.f, -11 / 2.f) * m_Physics->getSpecification().MetersToPixel, glm::vec3(0, 1, 0));
@@ -140,8 +108,6 @@ void Sandbox::OnRender()
 
 	Renderer::EndScene();
 
-	/*
-	*/
 
 	ImGui::Begin("Test");
 	if (ImGui::Button("Open..."))
@@ -227,4 +193,13 @@ void Sandbox::LoadData(const std::string& filepath)
 
 	m_Physics = CreateScope<Physics>(spec, obstacles, in, out);
 	m_Particles = CreateRef<Particles>(PARTICLES_LIMIT);
+
+	for (size_t i = 0; i < obstacles.size(); i++)
+	{
+		obstacles[i].x_pos *= spec.MetersToPixel;
+		obstacles[i].y_pos *= spec.MetersToPixel;
+		obstacles[i].width *= spec.MetersToPixel;
+		obstacles[i].height *= spec.MetersToPixel;
+	}
+	Renderer::SetObstacles(obstacles);
 }

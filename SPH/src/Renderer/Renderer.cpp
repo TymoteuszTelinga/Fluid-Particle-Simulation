@@ -153,7 +153,7 @@ void Renderer::Clear()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::SetObstacles(const std::vector<Obstacle>& obstacles)
+void Renderer::SetObstacles(const std::vector<obstacle>& obstacles)
 {
 	uint32_t Indices = obstacles.size() * 6;
 	uint32_t* quadIndices = new uint32_t[Indices];
@@ -177,10 +177,11 @@ void Renderer::SetObstacles(const std::vector<Obstacle>& obstacles)
 	QuadVertex* vertexBuffer = new QuadVertex[Vertexes];
 	for (uint32_t i = 0, j = 0; i < Vertexes; i+=4, j++)
 	{
-		vertexBuffer[i + 0].Position = obstacles[j].Min;
-		vertexBuffer[i + 1].Position = glm::vec2(obstacles[j].Max.x, obstacles[j].Min.y);
-		vertexBuffer[i + 2].Position = obstacles[j].Max;
-		vertexBuffer[i + 3].Position = glm::vec2(obstacles[j].Min.x, obstacles[j].Max.y);
+
+		vertexBuffer[i + 0].Position = glm::vec2(obstacles[j].x_pos, obstacles[j].y_pos);
+		vertexBuffer[i + 1].Position = glm::vec2(obstacles[j].x_pos + obstacles[j].width, obstacles[j].y_pos);
+		vertexBuffer[i + 2].Position = glm::vec2(obstacles[j].x_pos + obstacles[j].width, obstacles[j].y_pos + obstacles[j].height);
+		vertexBuffer[i + 3].Position = glm::vec2(obstacles[j].x_pos, obstacles[j].y_pos + obstacles[j].height);
 	}
 	s_Data.BackgroundBuffer = CreateRef<VertexBuffer>(vertexBuffer, Vertexes * sizeof(QuadVertex));
 	delete[] vertexBuffer;

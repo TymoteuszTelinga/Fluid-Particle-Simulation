@@ -6,6 +6,6 @@ OutArea:
     Max: [9, -4]
 Obstacles:
   - Min: [-4, -4]
-    Max: [-2, 8]
+    Max: [-2, 5.5]
   - Min: [0, -4]
-    Max: [12, -3]
+    Max: [9.5, -3]
