@@ -60,7 +60,6 @@ void Particles::getFromCuda() {
 	CUDA_CALL(cudaMemcpy(velocities_y, c_velocities_y_addr, size * sizeof(float), cudaMemcpyDeviceToHost));
 }
 
-
 bool Particles::addParticle(float x_pos, float y_pos) {
 	if (size >= capacity) {
 		return false;

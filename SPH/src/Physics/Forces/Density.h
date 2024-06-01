@@ -3,19 +3,37 @@
 
 #include "Physics/physicsSpecification.h"
 #include "Physics/Entities/Particles.h"
-#include "Physics/Logic/NeighbourSearch.h"
 #include "Physics/Logic/KernelFactors.h"
 
+/**
+* Class for calculating particles' density and near density
+* 
+* @note uses CUDA
+*/
 class Density
 {
 
 public:
-	Density(physicsSpecification& spec, Ref<NeighbourSearch> neighbourSearch, Ref<KernelFactors> kernel) : p_spec(spec), neighbourSearch(neighbourSearch), kernel(kernel){}
+
+	/**
+	* The constructor.
+	* 
+	* @param spec physics specification
+	* @param kernel reference to shared class with smoothing kernels factors 
+	*/
+	Density(physicsSpecification& spec, Ref<KernelFactors> kernel) : p_spec(spec), kernel(kernel){}
+	
+	/**
+	*	calculated density and near density
+	* 
+	* @note uses CUDA
+	* 
+	* @param particles for which density and near density will be calculated.
+	*/
 	void Calculate(Ref<Particles> particles) const;
 
 private:
 	physicsSpecification& p_spec;
-	Ref<NeighbourSearch> neighbourSearch;
 	Ref<KernelFactors> kernel;
 };
 
