@@ -136,6 +136,11 @@ void Sandbox::OnRender()
 		ImGui::DragFloat("Camera speed", &m_CameraSpeed, 1.0f, 5.0f, 500.0f);
 		ImGui::Text("Camera zoom: %.2f", m_Camera->GetZoomLevel());
 		ImGui::ColorEdit3("Particle", &m_Tint.r);
+		bool bWindowVSync = GetWindow().IsVSync();
+		if (ImGui::Checkbox("VSync", &bWindowVSync))
+		{
+			GetWindow().SetVSync(bWindowVSync);
+		}
 	}
 	if (ImGui::CollapsingHeader("Physics") && m_Physics) 
 	{

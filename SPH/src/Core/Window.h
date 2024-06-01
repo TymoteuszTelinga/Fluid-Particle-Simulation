@@ -17,6 +17,8 @@ public:
 	void Shutdown();
 	void OnUpdate();
 	bool IsOpen() const;
+	void SetVSync(bool enable);
+	bool IsVSync() const { return m_Data.bVSync; };
 
 	void SetEventCallback(const EventCallbackFn& callback);
 	GLFWwindow* GetWindow() const { return m_Window; }
@@ -27,6 +29,7 @@ private:
 		EventCallbackFn callback;
 		uint32_t width;
 		uint32_t height;
+		bool bVSync;
 	};
 
 	WindowData m_Data;

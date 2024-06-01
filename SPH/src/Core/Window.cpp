@@ -15,7 +15,7 @@ bool Window::Init()
 	//glfwWindowHint(GLFW_SAMPLES,8);
 
 	//Create a windowed mode window and its OpenGL context
-	m_Window = glfwCreateWindow(m_Data.width, m_Data.height, "Hello World", NULL, NULL);
+	m_Window = glfwCreateWindow(m_Data.width, m_Data.height, "Fluid Simulation", NULL, NULL);
 	if (!m_Window)
 	{
 		std::cout << "Createion error\n";
@@ -53,7 +53,7 @@ bool Window::Init()
 		});
 
 	//glfwSetWindowTitle();
-	//glfwSwapInterval(0);
+	SetVSync(true);
 
 	return true;
 }
@@ -72,6 +72,20 @@ void Window::OnUpdate()
 bool Window::IsOpen() const
 {
 	return !glfwWindowShouldClose(m_Window);
+}
+
+void Window::SetVSync(bool enable)
+{
+	if (enable)
+	{
+		glfwSwapInterval(1);
+	}
+	else
+	{
+		glfwSwapInterval(0);
+	}
+
+	m_Data.bVSync = enable;
 }
 
 void Window::SetEventCallback(const EventCallbackFn& callback)
