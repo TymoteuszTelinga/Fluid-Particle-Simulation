@@ -1,6 +1,6 @@
 Physics:
-    Width: 19.0
-    Height: 11.0
+    Width: 190.0
+    Height: 110.0
     Gravity: 9.81
     CollisionDamping: 0.2
     KernelRange: 0.35
@@ -8,8 +8,8 @@ Physics:
     GasConstant: 500
     NearPressureCoef: 18
     Viscosity: 0.06
-    ParticlesPerSecond: 100
-    ParticleLimit: 3000
+    ParticlesPerSecond: 10000
+    ParticleLimit: 400
 InArea:
     Min: [8, 4]
     Max: [9, 5]

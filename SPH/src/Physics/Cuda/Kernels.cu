@@ -289,6 +289,9 @@ __global__ void CollisionKernel(size_t size, float deltaTime, float collisionDam
 }
 
 void GravityCuda(float acc, size_t size, float deltaTime) {
+	if (size < 1) {
+		return;
+	}
 	size_t blocks = size / TPB;
 	if (size % TPB != 0) {
 		blocks += 1;
@@ -310,7 +313,9 @@ void GravityCuda(float acc, size_t size, float deltaTime) {
 
 void DensityCuda(float kernelRange, float densityFactor, float nearDensityFactor, 
 	size_t size, int cellRows, int cellColls, int* indices, size_t indices_size) {
-
+	if (size < 1) {
+		return;
+	}
 	size_t blocks = size / TPB;
 	if (size % TPB != 0) {
 		blocks += 1;
@@ -331,6 +336,9 @@ void DensityCuda(float kernelRange, float densityFactor, float nearDensityFactor
 
 void PressureCuda(float kernelRange, float spiky2DerivFactor, float spiky3DerivFactor, float gasConstant,
 	float restDensity, float nearPressureCoef, size_t size, int cellRows, int cellColls, int* indices, size_t indices_size, float deltaTime) {
+	if (size < 1) {
+		return;
+	}
 	size_t blocks = size / TPB;
 	if (size % TPB != 0) {
 		blocks += 1;
@@ -350,7 +358,9 @@ void PressureCuda(float kernelRange, float spiky2DerivFactor, float spiky3DerivF
 }
 
 void ViscosityCuda(float kernelRange, float poly6Factor, float viscosityStrength, size_t size, int cellRows, int cellColls, int* indices, size_t indices_size, float deltaTime) {
-
+	if (size < 1) {
+		return;
+	}
 	size_t blocks = size / TPB;
 	if (size % TPB != 0) {
 		blocks += 1;
@@ -370,6 +380,9 @@ void ViscosityCuda(float kernelRange, float poly6Factor, float viscosityStrength
 }
 
 void UpdateAndCollisionCuda(size_t size, float deltaTime, float collisionDamping, float particlesRadius, float min_x, float max_x, float min_y, float max_y, obstacle* obstacles, size_t obstacles_size) {
+	if (size < 1) {
+		return;
+	}
 	size_t blocks = size / TPB;
 	if (size % TPB != 0) {
 		blocks += 1;
