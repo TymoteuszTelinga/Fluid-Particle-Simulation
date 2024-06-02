@@ -19,5 +19,5 @@ struct physicsSpecification {
 	float NearPressureCoef = 18.0f; /** equivalent of gas constant, but for near density */
 
 	float KernelRange = 0.5f; /** range of smoothing kernel */
-	float ParticlesPerSecond = 100; /** amount of particles generated in one second*/
+	int ParticlesPerSecond = 100; /** amount of particles generated in one second*/
 };

@@ -21,6 +21,7 @@ static void LoadSpecification(const YAML::Node& node, physicsSpecification& spec
 	spec.GasConstant = node["GasConstant"].as<float>();
 	spec.NearPressureCoef = node["NearPressureCoef"].as<float>();
 	spec.ViscosityStrength = node["Viscosity"].as<float>();
+	spec.ParticlesPerSecond = node["ParticlesPerSecond"].as<int>();
 }
 
 SimulationLoader::SimulationLoader()
@@ -128,6 +129,7 @@ void SimulationLoader::CreateDefoultConfiguration()
 	m_PhysicsSpec.GasConstant = 500;
 	m_PhysicsSpec.NearPressureCoef = 18;
 	m_PhysicsSpec.ViscosityStrength = 0.06;
+	m_PhysicsSpec.ParticlesPerSecond = 100;
 
 	m_ParticleLimit = 2000;
 }
