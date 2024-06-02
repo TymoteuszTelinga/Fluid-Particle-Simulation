@@ -18,9 +18,12 @@ public:
 	inline uint32_t GetParticleLimit() const { return m_ParticleLimit; };
 
 private:
+	void CreateDefoultConfiguration();
+
+private:
 	std::vector<obstacle> m_Obstacles;
 	flow_area m_InArea;
 	flow_area m_OutArea;
 	physicsSpecification m_PhysicsSpec;
-	uint32_t m_ParticleLimit = 2000;
+	uint32_t m_ParticleLimit;
 };

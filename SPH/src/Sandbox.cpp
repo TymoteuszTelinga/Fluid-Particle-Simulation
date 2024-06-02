@@ -197,9 +197,10 @@ void Sandbox::LoadData(const std::string& filepath)
 	flow_area out = Loader.GetOutArea();
 
 	physicsSpecification spec = Loader.GetSpecification();
+	uint32_t initialLimit = Loader.GetParticleLimit();
 
 	m_Physics = CreateScope<Physics>(spec, obstacles, in, out);
-	m_Particles = CreateRef<Particles>(2000,PARTICLES_LIMIT);
+	m_Particles = CreateRef<Particles>(initialLimit,PARTICLES_LIMIT);
 
 	Renderer::ResetRectangles();
 

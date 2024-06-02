@@ -8,6 +8,7 @@ Physics:
     GasConstant: 500
     NearPressureCoef: 18
     Viscosity: 0.06
+    ParticleLimit: 3000
 InArea:
     Min: [8, 4]
     Max: [9, 5]
