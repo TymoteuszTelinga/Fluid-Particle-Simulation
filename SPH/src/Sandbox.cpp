@@ -69,7 +69,7 @@ void Sandbox::OnUpdate(float DeltaTime)
 	{
 		//for (int i = 0; i < 4; i++) 
 		{
-			m_Physics->Apply(m_Particles, DeltaTime / 4.0f, 5);
+			m_Physics->Apply(m_Particles, DeltaTime / 4.0f);
 		}
 	}
 

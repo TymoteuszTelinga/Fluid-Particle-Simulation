@@ -133,9 +133,7 @@ __global__ void PressureKernel(float kernelRange, float spiky2DerivFactor, float
 			if (distance > 0.0f) {
 				dir_x = (c_predicted_positions_x[pIdx] - c_predicted_positions_x[idx]) / distance;
 				dir_y = (c_predicted_positions_y[pIdx] - c_predicted_positions_y[idx]) / distance;
-
 			}
-
 
 			float pressureCoef = 0.5f * (pressure + pPressure) * slope / (density * pDensity);
 			float nearPressureCoef = 0.5f * (nearPressure + pNearPressure) * nearSlope / (density * pNearDensity);

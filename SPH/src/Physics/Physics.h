@@ -60,7 +60,7 @@ public:
 	* @param deltaTime time from the last physic influence. It is used for velocity and position calculations. 
 	* @param fillSize amount of particles which should be generated.
 	*/
-	void Apply(Ref<Particles> particles, const float deltaTime, const size_t fillSize) const;
+	void Apply(Ref<Particles> particles, const float deltaTime) const;
 
 	/**
 	* returs reference to currently used physic specification. Altering its attributes will change
