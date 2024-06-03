@@ -10,7 +10,6 @@
 #include "Renderer/VertexArray.h"
 #include "Renderer/IndexBuffer.h"
 #include "Renderer/Shader.h"
-#include "Renderer/Texture.h"
 
 #include "Physics/Physics.h"
 

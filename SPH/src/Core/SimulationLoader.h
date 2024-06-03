@@ -5,6 +5,9 @@
 #include "Core/CommonTypes.h"
 #include "Physics/PhysicsSpecification.h"
 
+/*
+* class that allows to load simulation configuration from file in yaml format
+*/
 class SimulationLoader
 {
 public:

@@ -6,11 +6,9 @@
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
+Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
 {
-    std::string vertexShader = loadShaderFromFile(vertexPath);
-    std::string fragmentShader = loadShaderFromFile(fragmentPath);
-    m_RendererID = createShader(vertexShader, fragmentShader);
+    m_RendererID = createShader(vertexSrc, fragmentSrc);
 }
 
 Shader::~Shader()

@@ -2,14 +2,6 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
-static void serializeObstacle(YAML::Emitter& out, const obstacle& o)
-{
-	out << YAML::BeginMap;
-	out << YAML::Key << "Min" << YAML::Value << YAML::Flow << YAML::BeginSeq << o.x_pos << o.y_pos << YAML::EndSeq;
-	out << YAML::Key << "Max" << YAML::Value << YAML::Flow << YAML::BeginSeq << o.x_pos+o.width << o.y_pos+o.height << YAML::EndSeq;
-	out << YAML::EndMap;
-};
-
 static void LoadSpecification(const YAML::Node& node, physicsSpecification& spec)
 {
 	spec.Width = node["Width"].as<float>();
@@ -100,22 +92,6 @@ bool SimulationLoader::Load(const std::string& filepath)
 
 	return true;
 
-	/*
-	YAML::Emitter out;
-
-	out << YAML::BeginMap;
-	out << YAML::Key << "Obstacles" << YAML::Value << YAML::BeginSeq;
-	for (auto& obs : m_Obstacles)
-	{
-		serializeObstacle(out, obs);
-	}
-
-	out << YAML::EndSeq;
-	out << YAML::EndMap;
-
-	std::ofstream fout(filepath);
-	fout << out.c_str();
-	*/
 }
 
 void SimulationLoader::CreateDefoultConfiguration()

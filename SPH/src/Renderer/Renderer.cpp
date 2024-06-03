@@ -1,6 +1,5 @@
 
 #include "Renderer.h"
-#include "Texture.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 
@@ -64,6 +63,7 @@ struct RendererData
 	Ref<Shader> QuadShader;
 
 	uint32_t QuadCount = 0;
+	uint32_t BackgroundQuadCount = 0;
 	QuadVertex* QuadVertexBufferBase = nullptr;
 
 
@@ -135,7 +135,16 @@ void Renderer::Init()
 	s_Data.ParticleVertexPositions[2] = {  s_Data.ParticleSize,  s_Data.ParticleSize, 0.0f, 1.0f };
 	s_Data.ParticleVertexPositions[3] = { -s_Data.ParticleSize,  s_Data.ParticleSize, 0.0f, 1.0f };
 
-	s_Data.ParticleShader = CreateRef<Shader>("src\\Shaders\\vertex.glsl", "src\\Shaders\\fragment.glsl");
+	
+	const std::string vertexSrc = 
+	#include "Shaders/vertex.glsl"
+	;
+
+	const std::string fragmentSrc =
+	#include "Shaders/fragment.glsl"
+	;
+
+	s_Data.ParticleShader = CreateRef<Shader>(vertexSrc, fragmentSrc);
 
 	//Quad Data
 	s_Data.QuadVertexArray = CreateRef<VertexArray>();
@@ -150,7 +159,11 @@ void Renderer::Init()
 
 	s_Data.QuadIndexBuffer = CreateRef<IndexBuffer>(ParticleIndices, s_Data.MaxQuadIndices);
 
-	s_Data.QuadShader = CreateRef<Shader>("src\\Shaders\\vertex.glsl", "src\\Shaders\\fragmentBG.glsl");
+	const std::string fragmentBGSrc =
+	#include "Shaders/fragmentBG.glsl"
+	;
+
+	s_Data.QuadShader = CreateRef<Shader>(vertexSrc, fragmentBGSrc);
 	delete[] ParticleIndices;
 
 }
@@ -178,9 +191,10 @@ void Renderer::Clear()
 void Renderer::ResetRectangles()
 {
 	s_Data.QuadCount = 0;
+	s_Data.BackgroundQuadCount = 0;
 }
 
-void Renderer::AddRectangle(const glm::vec2& min, const glm::vec2& max, const glm::vec3& color)
+void Renderer::AddRectangle(const glm::vec2& min, const glm::vec2& max, const glm::vec3& color, bool bIsBackground)
 {
 	if (s_Data.QuadCount >= s_Data.MaxQuads)
 	{
@@ -213,6 +227,10 @@ void Renderer::AddRectangle(const glm::vec2& min, const glm::vec2& max, const gl
 	s_Data.QuadVertexBufferBase[index + 2] = p3;
 	s_Data.QuadVertexBufferBase[index + 3] = p4;
 
+	if (bIsBackground)
+	{
+		s_Data.BackgroundQuadCount++;
+	}
 	s_Data.QuadCount ++;
 }
 
@@ -278,7 +296,7 @@ void Renderer::DrawQuad(const glm::vec2& position, const glm::vec3& color)
 void Renderer::EndScene()
 {
 	Flush();
-	
+	DrawObstacles();
 }
 
 void Renderer::ResetStats()
@@ -327,8 +345,18 @@ void Renderer::DrawBackground()
 	s_Data.QuadShader->SetUniformMat4f("MVPMatrix", s_CameraData.ViewProjectionMatrix);
 	s_Data.QuadVertexArray->Bind();
 	s_Data.QuadIndexBuffer->Bind();
-	glDrawElements(GL_TRIANGLES, s_Data.QuadCount*6, GL_UNSIGNED_INT, nullptr);
+	glDrawElementsBaseVertex(GL_TRIANGLES, s_Data.BackgroundQuadCount * 6, GL_UNSIGNED_INT, nullptr, 0);
 	s_Stats.DrawCalls++;
 
 	//glDisable(GL_DEPTH_TEST);
+}
+
+void Renderer::DrawObstacles()
+{
+	s_Data.QuadShader->Bind();
+	s_Data.QuadShader->SetUniformMat4f("MVPMatrix", s_CameraData.ViewProjectionMatrix);
+	s_Data.QuadVertexArray->Bind();
+	s_Data.QuadIndexBuffer->Bind();
+	glDrawElementsBaseVertex(GL_TRIANGLES, (s_Data.QuadCount - s_Data.BackgroundQuadCount) * 6, GL_UNSIGNED_INT, nullptr, s_Data.BackgroundQuadCount * 4);
+	s_Stats.DrawCalls++;
 }

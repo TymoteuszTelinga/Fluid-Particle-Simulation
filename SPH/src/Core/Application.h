@@ -13,6 +13,9 @@ struct ApplicationSpecification
 	uint32_t MinUpdateFrameRate = 30;
 };
 
+/*
+* Class representing the application responsible for forwarding events and handling the main program loop
+*/
 class Application
 {
 public:
@@ -24,9 +27,19 @@ public:
 	Window& GetWindow() const { return *m_Window; };
 
 	virtual void Run();
-
+	/*
+	* Function that allows to react to events that occurred while the application is running
+	* @param e event that occurred
+	*/
 	virtual void OnEvent(Event& e) {};
+	/*
+	* function representing a computational step of the program logic
+	* @param DeltaTime time expressed in seconds between individual function calls
+	*/
 	virtual void OnUpdate(float DeltaTime) {};
+	/*
+	* Represents the rendering step of a current frame
+	*/
 	virtual void OnRender() {};
 
 protected:
@@ -36,8 +49,6 @@ private:
 	void OnEventApp(Event& e);
 	bool ResizeVieport(WindowResizeEvent& e);
 	bool WindowMoved(WindowMovedEvent& e);
-	//void Init();
-	//void Shutdown();
 
 private:
 	ApplicationSpecification m_Specification;

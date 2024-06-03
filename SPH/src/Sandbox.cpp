@@ -37,6 +37,7 @@ void Sandbox::OnUpdate(float DeltaTime)
 
 	glm::vec3 cameraPos = m_Camera->GetPosition();
 	bool bMoved = false;
+
 	//Movement
 	if (Input::IsKeyDown(GLFW_KEY_W))
 	{
@@ -67,10 +68,7 @@ void Sandbox::OnUpdate(float DeltaTime)
 
 	if (m_Physics && m_Particles)
 	{
-		//for (int i = 0; i < 4; i++) 
-		{
-			m_Physics->Apply(m_Particles, DeltaTime / 4.0f);
-		}
+		m_Physics->Apply(m_Particles, DeltaTime / 4.0f);
 	}
 
 }
@@ -84,6 +82,7 @@ void Sandbox::OnRender()
 		{
 			Renderer::DrawQuad(m_Particles->getPosition(i) * m_Physics->getSpecification().MetersToPixel, m_Tint);
 		}
+
 	}
 
 	Renderer::EndScene();
@@ -206,7 +205,15 @@ void Sandbox::LoadData(const std::string& filepath)
 
 	glm::vec2 min = glm::vec2(-(spec.Width / 2.f), -(spec.Height / 2.f)) * spec.MetersToPixel;
 	glm::vec2 max = glm::vec2(spec.Width / 2.f, spec.Height / 2.f) * spec.MetersToPixel;
-	Renderer::AddRectangle(min, max, glm::vec3(0.1, 0.1, 0.1));
+	Renderer::AddRectangle(min, max, glm::vec3(0.1, 0.1, 0.1), true);
+
+	glm::vec2 outMin = glm::vec2(out.x_pos, out.y_pos) * spec.MetersToPixel;
+	glm::vec2 outMax = outMin + glm::vec2(out.width, out.height) * spec.MetersToPixel;
+	Renderer::AddRectangle(outMin, outMax, glm::vec3(0.5, 0, 0), true);
+
+	glm::vec2 inMin = glm::vec2(in.x_pos, in.y_pos) * spec.MetersToPixel;
+	glm::vec2 inMax = inMin + glm::vec2(in.width, in.height) * spec.MetersToPixel;
+	Renderer::AddRectangle(inMin, inMax, glm::vec3(0, 0.5, 0), true);
 
 	for (size_t i = 0; i < obstacles.size(); i++)
 	{
@@ -214,14 +221,6 @@ void Sandbox::LoadData(const std::string& filepath)
 		glm::vec2 max = min + glm::vec2(obstacles[i].width, obstacles[i].height) * spec.MetersToPixel;
 		Renderer::AddRectangle(min, max);
 	}
-
-	glm::vec2 outMin = glm::vec2(out.x_pos, out.y_pos) * spec.MetersToPixel;
-	glm::vec2 outMax = outMin + glm::vec2(out.width, out.height) * spec.MetersToPixel;
-	Renderer::AddRectangle(outMin, outMax, glm::vec3(0.5, 0, 0));
-
-	glm::vec2 inMin = glm::vec2(in.x_pos, in.y_pos) * spec.MetersToPixel;
-	glm::vec2 inMax = inMin + glm::vec2(in.width, in.height) * spec.MetersToPixel;
-	Renderer::AddRectangle(inMin, inMax, glm::vec3(0, 0.5, 0));
 
 	Renderer::UpdateRectangles();
 }

@@ -2,12 +2,29 @@
 
 #include <glm/glm.hpp>
 
+/*
+* class representing the ortographic camera
+*/
 class Camera
 {
 public:
+	/*
+	* constructor creating camera base on input parameters
+	* @param width total width of camera image
+	* @param height total height of camera image
+	*/
 	Camera(float width, float height);
 
+	/*
+	* reconstruct camera matrix to represent new image resolution
+	* @param width total width of camera image
+	* @param height total height of camera image
+	*/
 	void Resize(float width, float height);
+	/*
+	* chenge camera zoom base on input parameter
+	* @param delta the value by which the camera zoom needs to be modified
+	*/
 	void Zoom(float delta);
 
 	const glm::vec3& GetPosition() const { return m_Position; }

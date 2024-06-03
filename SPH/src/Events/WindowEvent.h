@@ -46,7 +46,6 @@ private:
 	unsigned int m_PositionX, m_PositionY;
 };
 
-
 class ScrollEvent : public Event
 {
 public:
